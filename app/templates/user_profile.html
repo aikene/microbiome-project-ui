@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Client profile | {{ username }}
+{% endblock %}  
+
+{% block body %}
+    <h1>{{ username }}'s profile </h1>
+    <p>{{ full_name }}</p>
+    <p><b>Email:</b> {{ email }}</p>
+    <p><b>Date joined:</b> {{ date_joined }}</p>
+
+{% endblock %}
+
+
