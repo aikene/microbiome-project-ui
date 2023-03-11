@@ -1,1 +1,9 @@
+# Django Commons
+*.log
+*.pot
+*.pyc
+__pycache__
+
 /venv/
+
+.idea
