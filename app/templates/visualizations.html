@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container">
+    <h1>Visualizations</h1>
+    <div class="row">
+        <div class="p-4 col"></div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto"></div>
+        <div class="col-md-auto">
+            <button onclick="location.href= '{% url 'home' %}'" type="search" class="btn btn-info btn-lg">Back to Home
+            </button>
+        </div>
+        <div class="col-md-auto"></div>
+    </div>
+        <div class="row">
+        <div class="p-4 col"></div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto"></div>
+        <div class="col-md-auto">
+            <button onclick="location.href=#" type="search" class="btn btn-info btn-lg">Download Resultset
+            </button>
+        </div>
+        <div class="col-md-auto"></div>
+    </div>
+</div>
+{% endblock %}
