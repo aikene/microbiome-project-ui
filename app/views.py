@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+import numpy as np
 
 from .models import User
 
@@ -12,7 +13,22 @@ from .models import User
 
 
 def home(request):
-    return render(request, 'home.html')
+    other_list = ['buccal mucosa', 'blood cell', 'gingiva', 'nasal cavity', 'dorsum of tongue']
+    for a in np.arange(1, 51):
+        other_list.append(f'Other-{a}')
+    list_of_filters = {
+        'Host Characteristics': ['Male', 'Female', 'Disease State', 'Other'],
+        'Sample Source': ['Feces', 'Skin', 'Cecum'],
+        'Study Type': ['Metagenomics', '16S', 'Other'],
+        'Other Criteria': other_list,
+    }
+    return render(request, 'home.html', {
+        "filters": list_of_filters
+    })
+
+
+def visualization(request):
+    return render(request, 'visualizations.html')
 
 
 def login_view(request):
