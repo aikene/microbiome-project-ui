@@ -13,14 +13,13 @@ from .models import User
 
 
 def home(request):
-    other_list = ['buccal mucosa', 'blood cell', 'gingiva', 'nasal cavity', 'dorsum of tongue']
-    for a in np.arange(1, 51):
-        other_list.append(f'Other-{a}')
+    # other_list = ['buccal mucosa', 'blood cell', 'gingiva', 'nasal cavity', 'dorsum of tongue']
+    # for a in np.arange(1, 51):
+    #     other_list.append(f'Other-{a}')
     list_of_filters = {
         'Host Characteristics': ['Male', 'Female', 'Disease State', 'Other'],
         'Sample Source': ['Feces', 'Skin', 'Cecum'],
-        'Study Type': ['Metagenomics', '16S', 'Other'],
-        'Other Criteria': other_list,
+        'Study Type': ['Metagenomics', '16S', 'Other']
     }
     return render(request, 'home.html', {
         "filters": list_of_filters
