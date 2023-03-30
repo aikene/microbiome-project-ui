@@ -6,7 +6,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/django-aws_cicd
-ExecStart=/home/ubuntu/env/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/django-aws_cicd/awscicd/awscicd.sock awscicd.wsgi:application
+ExecStart=/home/ubuntu/env/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/django-aws_cicd/awscicd/main.sock main.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
