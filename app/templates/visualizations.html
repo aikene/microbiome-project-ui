@@ -9,12 +9,37 @@
     <div class="row justify-content-md-center">
         <div class="col-md-auto"></div>
         <div class="col-md-auto">
+            <h4>Current List of Visualizations by Study</h4>
+            <ul class="list-group">
+                {% for key, value in urls.items %}
+                <a href="{{value}}" target="_blank">
+                    <li class="list-group-item list-group-item-action">{{key}}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                            <path fill-rule="evenodd"
+                                  d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                        </svg>
+                    </li>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-auto"></div>
+    </div>
+    <div class="row">
+        <div class="p-4 col"></div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto"></div>
+        <div class="col-md-auto">
             <button onclick="location.href= '{% url 'home' %}'" type="search" class="btn btn-info btn-lg">Back to Home
             </button>
         </div>
         <div class="col-md-auto"></div>
     </div>
-        <div class="row">
+    <div class="row">
         <div class="p-4 col"></div>
     </div>
     <div class="row justify-content-md-center">
