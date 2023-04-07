@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-
+{% load static %}
+<script src="{% static './main.js' %}"></script>
 {% block body %}
 <div class="container">
     <h1>Visualizations</h1>
@@ -9,11 +10,19 @@
     <div class="row justify-content-md-center">
         <div class="col-md-auto"></div>
         <div class="col-md-auto">
-            <h4>Current List of Visualizations by Study</h4>
+            <h4>Visualizations for Queried Studies</h4>
+
+            <div id="spinner-box" class="spinner-border text-primary">
+                <span class="sr-only">Loading...</span>
+            </div>
+
+            <div id="data-box">
+                <p id="message-box"></p>
+            </div>
+
             <ul class="list-group">
-                {% for key, value in urls.items %}
-                <a href="{{value}}" target="_blank">
-                    <li class="list-group-item list-group-item-action">{{key}}
+                <a id= "url-1" href="" target="_blank" style="display:none">
+                    <li class="list-group-item list-group-item-action">Feature Table
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -23,8 +32,36 @@
                         </svg>
                     </li>
                 </a>
-                {% endfor %}
+
+                <a id= "url-2" href="" target="_blank" style="display:none">
+                    <li class="list-group-item list-group-item-action">Taxonomy Table
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+                            <path fill-rule="evenodd"
+                                  d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+                        </svg>
+                    </li>
+                </a>
+
             </ul>
+
+            <!--            <ul class="list-group">-->
+            <!--                {% for key, value in urls.items %}-->
+            <!--                <a href="{{value}}" target="_blank">-->
+            <!--                    <li class="list-group-item list-group-item-action">{{key}}-->
+            <!--                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"-->
+            <!--                             class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">-->
+            <!--                            <path fill-rule="evenodd"-->
+            <!--                                  d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>-->
+            <!--                            <path fill-rule="evenodd"-->
+            <!--                                  d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>-->
+            <!--                        </svg>-->
+            <!--                    </li>-->
+            <!--                </a>-->
+            <!--                {% endfor %}-->
+            <!--            </ul>-->
         </div>
         <div class="col-md-auto"></div>
     </div>
@@ -51,4 +88,66 @@
         <div class="col-md-auto"></div>
     </div>
 </div>
+
+<script>
+$( document ).ready(function() {
+    $("#spinner-box").hide();
+    //on page load calling the post processing api
+    call_api();
+
+});
+
+function call_api() {
+    $("#spinner-box").show();
+    $.getJSON('http://35.82.29.117:8000',
+    { library_layout:'PAIRED' }, function(data, textStatus, jqXHR){
+             //alert("task id returned "+data.task_id);
+
+             get_progress(data.task_id, data.timestamp);
+        })
+        .done(function () {
+
+            console.log("request completed");
+
+         })
+        .fail(function (jqxhr,settings,ex) { console.log('failed, '+ ex); });
+}
+
+async function get_progress(task_id, timestamp) {
+       var completed = false;
+        while (!completed){
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+
+      try {
+        let res = await fetch(
+          "http://35.82.29.117:8000/celery-progress/"+task_id
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (!data.complete){
+                     $("#message-box").html("progress "+data.progress.current + " - "+ data.progress.description);
+                     }
+                     else
+                     {
+                        completed = true;
+                        $("#spinner-box").hide();
+                        $("#url-1").attr("href","https://view.qiime2.org/visualization/?type=html&src=https://qiime2storage.s3.us-west-2.amazonaws.com/merged_results/"+timestamp+"-"+task_id+"/merged_feature_tables.qzv");
+                        $("#url-2").attr("href","https://view.qiime2.org/visualization/?type=html&src=https://qiime2storage.s3.us-west-2.amazonaws.com/merged_results/"+timestamp+"-"+task_id+"/taxonomy_bar_plot.qzv");
+                        $("#message-box").hide();
+
+                        $("#url-1").show();
+                        $("#url-2").show();
+                     }
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    }
+</script>
+
+
 {% endblock %}
