@@ -21,4 +21,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
+    path('filtered_table/', include('filter_table.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

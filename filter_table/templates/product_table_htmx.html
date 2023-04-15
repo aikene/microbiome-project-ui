@@ -1,0 +1,20 @@
+{# product/templates/product_table_htmx.html #}
+{% extends "./././layout.html" %}
+
+{% load render_table from django_tables2 %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block body %}
+    <h1>Product table</h1>
+
+
+    {# Progress indicator #}
+    <div class="progress">
+        <div class="indeterminate"></div>
+    </div>
+
+    {# The actual table #}
+    {% render_table table %}
+{% endblock %}
