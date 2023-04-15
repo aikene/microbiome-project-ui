@@ -8,7 +8,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+import models
+from .models import User, Metadata
+from .common_models import *
+
 
 # Create your views here.
 logger = logging.getLogger('django')
@@ -20,11 +23,13 @@ s3_url = "https://qiime2storage.s3.us-west-2.amazonaws.com/merged_results"
 
 def home(request):
     list_of_filters = {
-        'Host Characteristics': ['Male', 'Female', 'Disease State', 'Other'],
-        'Sample Source': ['Feces', 'Skin', 'Cecum'],
+        'Sex': Distinct_Sex.objects.values_list('sex_calc', flat=True),
+        # 'Assay Type': Metadata.objects.values("assay_type").distinct(),
         'Study Type': ['Metagenomics', '16S', 'Other'],
-        'Study ID': ['SRR12191591', 'ERR6005217', 'SRR12191683', 'SRR7646376', 'SRR7646363'],
-        'Layout': ['Single', 'Paired']
+        'SRA Study ID': Distinct_SRA.objects.values_list('sra_study', flat=True),
+        'Library Layout': Distinct_Library_Layout.objects.values_list('librarylayout', flat=True),
+        'Library Selection': Distinct_Library_Selection.objects.values_list('libraryselection',
+                                                                           flat=True)
     }
     return render(request, 'home.html', {
         "filters": list_of_filters
