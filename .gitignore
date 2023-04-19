@@ -9,3 +9,9 @@ __pycache__
 
 # Remove .env file from commits
 awscicd/.env
+
+# Bing's env
+/ui-env/
+.DS_Store
+
+.vscode

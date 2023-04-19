@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% load static %}
+<script src="{% static './main.js' %}"></script>
+{% block body %}
+<div class="container">
+    <h1>Visualizations</h1>
+    <div class="row">
+        <div class="p-4 col"></div>
+    </div>
+    <div class="row justify-content-md-center">
+       
+        <div class="col-md-auto">
+        
+          <div id="subtitleMsg">
+            <p>Please wait while we preparing the visualization. You can click the below demo charts to try it.</p>
+          </div>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:0%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+            
+        </div>
+        <div class="col-md-12 row p-2">
+            <div id="progress-msg"></div>
+        </div>
+          <div class="col-md-12 row p-4">
+            <div class="col-md-6 col-sm-6 col-xs-12 d-flex p-4"><div class="thumbnail"><img src="{% static './img/taxa_thumb-b377d8.png' %}" alt="Taxonomic Bar Plots"><div class="caption"><h3>Taxonomic Bar Plots</h3><p>Explore the taxonomy of samples. Try selecting different taxonomic levels and metadata-based sample sorting.</p><p style="text-align: right;"><a href="/taxonomic_bar_plots/demo" target="_blank" class="btn btn-primary" id="btnTaxa">Try it!</a></p></div></div></div>
+            <div class="col-md-6 col-sm-6 col-xs-12 d-flex p-4"><div class="thumbnail"><img src="{% static './img/summarize_thumb-d590c5.png' %}" alt="Feature Table Summary"><div class="caption"><h3>Feature Table Summary</h3><p>Preview the impact of rarefying your data by manipulating the sampling depth to determine which samples or sample groups would be filtered.</p><p style="text-align: right;"><a href="/feature_table_summary/demo" target="_blank" class="btn btn-primary" id="btnFeature">Try it!</a></p></div></div></div>
+          </div>
+        </div>
+        <div class="col-md-auto"></div>
+    </div>
+    <div class="row">
+        <div class="p-4 col"></div>
+    </div>
+    <div>
+       Debug: {{ runIds }}
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    load_api();
+    //progress_bar();
+});
+
+async function progress_bar(){
+    var completed = false;
+    for(let i = 0; i<=100; i+=10){
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        $(".progress-bar").css("width",i+"%");
+        console.log("'"+i+"%'");
+    }
+}
+
+function load_api(){
+    //call post process api
+    $.ajax("http://44.236.252.211:8000", {
+            data : JSON.stringify({run_ids: '{{ runIds }}'}),
+            contentType : 'application/json',
+            type : 'POST',
+        })
+        .done(function( data ) {
+            console.log(data);
+            console.log("task id returned "+data.merge_results_task_id);
+            get_progress(data.merge_results_task_id,data.timestamp);
+        });
+
+    // $.getJSON('http://44.236.252.211:8000',
+    // { runIds:'{{ runIds }}' }, function(data, textStatus, jqXHR){
+    //         console.log("task id returned "+data.task_id);
+    //         get_progress(data.task_id, data.timestamp);
+    //     })
+    //     .done(function () {
+    //         console.log("request completed");
+    //      })
+    //     .fail(function (jqxhr,settings,ex) { console.log('failed, '+ ex); });
+}
+
+
+async function get_progress(task_id, timestamp) {
+       var completed = false;
+        while (!completed){
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+      try {
+        let res = await fetch(
+          "http://44.236.252.211:8000/celery-progress/"+task_id
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (!data.complete){
+                    $(".progress-bar").css("width",data.progress.current+"%");
+                   
+                     $("#progress-msg").html("<i>"+data.progress.description+"</i>");
+                     }
+                     else
+                     {
+                        completed = true;
+                        $(".progress-bar").css("width","100%");
+                        $(".progress").hide();
+                        $("#subtitleMsg").hide();
+                        $("#progress-msg").html("<p>Your data visualization is ready to view. click <a href='/download_result_csv/"+timestamp+"-"+task_id+"'>here</a> to download CSV.</p>");
+                        $("#btnTaxa").html("View")
+                        $("#btnTaxa").attr("href","/taxonomic_bar_plots/"+timestamp+"-"+task_id);
+                        $("#btnFeature").html("View")
+                        $("#btnFeature").attr("href","/feature_table_summary/"+timestamp+"-"+task_id);
+
+                     }
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    }
+
+
+</script>
+
+{% endblock %}
