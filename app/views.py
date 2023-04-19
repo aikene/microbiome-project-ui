@@ -18,7 +18,6 @@ from zipfile import ZipFile
 from datetime import datetime
 
 
-import models
 from .models import User, Metadata
 from .common_models import *
 
