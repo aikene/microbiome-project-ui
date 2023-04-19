@@ -1,0 +1,229 @@
+execution:
+    uuid: 98c5a4fe-2597-443c-9c2b-1c8dd10924dd
+    runtime:
+        start: 2023-04-04T18:28:14.027062+00:00
+        end: 2023-04-04T18:28:22.647913+00:00
+        duration: 8 seconds, and 620851 microseconds
+
+action:
+    type: method
+    plugin: !ref 'environment:plugins:dada2'
+    action: denoise_single
+    inputs:
+    -   demultiplexed_seqs: 979f7822-bbf0-4c34-8b52-1d8da59f2c99
+    parameters:
+    -   trunc_len: 0
+    -   trim_left: 0
+    -   max_ee: 2.0
+    -   trunc_q: 2
+    -   pooling_method: independent
+    -   chimera_method: consensus
+    -   min_fold_parent_over_abundance: 1.0
+    -   n_threads: 0
+    -   n_reads_learn: 1000000
+    -   hashed_feature_ids: true
+    output-name: table
+
+transformers:
+    inputs:
+        demultiplexed_seqs:
+        -   from: SingleLanePerSampleSingleEndFastqDirFmt
+            to: SingleLanePerSampleSingleEndFastqDirFmt
+    output:
+    -   from: biom.table:Table
+        to: BIOMV210DirFmt
+        plugin: !ref 'environment:plugins:types'
+        citations:
+        - !cite 'view|types:2022.2.0|biom.table:Table|0'
+        - !cite 'view|types:2022.2.0|BIOMV210DirFmt|0'
+
+environment:
+    platform: linux-x86_64
+    python: |-
+        3.8.13 | packaged by conda-forge | (default, Mar 25 2022, 06:04:10)
+        [GCC 10.3.0]
+    framework:
+        version: 2022.2.1
+        website: https://qiime2.org
+        citations:
+        - !cite 'framework|qiime2:2022.2.1|0'
+    plugins:
+        types:
+            version: 2022.2.0
+            website: https://github.com/qiime2/q2-types
+        dada2:
+            version: 2022.2.0
+            website: http://benjjneb.github.io/dada2/
+            citations:
+            - !cite 'plugin|dada2:2022.2.0|0'
+    python-packages:
+        certifi: 2022.5.18.1
+        qiime2: 2022.2.1
+        q2-diversity: 2022.2.1
+        q2-diversity-lib: 2022.2.1
+        q2-cutadapt: 2022.2.0
+        q2galaxy: 2022.2.0
+        q2-composition: 2022.2.0
+        q2-longitudinal: 2022.2.0
+        q2-gneiss: 2022.2.0
+        q2-types: 2022.2.0
+        q2-dada2: 2022.2.0
+        q2-demux: 2022.2.0
+        q2-phylogeny: 2022.2.0
+        q2-emperor: 2022.2.0
+        q2-deblur: 2022.2.0
+        q2-mystery-stew: 2022.2.0
+        q2-quality-control: 2022.2.0
+        q2-alignment: 2022.2.0
+        q2-fragment-insertion: 2022.2.0
+        q2cli: 2022.2.0
+        q2templates: 2022.2.0
+        q2-taxa: 2022.2.0
+        q2-metadata: 2022.2.0
+        q2-feature-table: 2022.2.0
+        q2-feature-classifier: 2022.2.0
+        q2-vsearch: 2022.2.0
+        q2-sample-classifier: 2022.2.0
+        q2-quality-filter: 2022.2.0
+        pytz: '2022.1'
+        setuptools: 59.8.0
+        cryptography: 37.0.2
+        pyzmq: 23.0.0
+        pip: 22.1.1
+        pyOpenSSL: 22.0.0
+        attrs: 21.4.0
+        packaging: '21.3'
+        argon2-cffi: 21.3.0
+        argon2-cffi-bindings: 21.2.0
+        unicodedata2: 14.0.0
+        PyQt5-sip: 12.9.0
+        Pillow: 9.1.1
+        ipython: 8.4.0
+        natsort: 8.1.0
+        ipywidgets: 7.7.0
+        jupyter-client: 7.3.1
+        pytest: 7.1.2
+        click: 7.1.2
+        ipykernel: 6.13.0
+        sip: 6.5.1
+        nbconvert: 6.5.0
+        notebook: 6.4.11
+        tornado: '6.1'
+        PyYAML: '6.0'
+        PyQt5: 5.15.4
+        psutil: 5.9.1
+        importlib-resources: 5.7.1
+        nbformat: 5.4.0
+        traitlets: 5.2.1.post0
+        bleach: 5.0.0
+        tqdm: 4.64.0
+        fonttools: 4.33.3
+        importlib-metadata: 4.11.4
+        beautifulsoup4: 4.11.1
+        jupyter-core: 4.10.0
+        pexpect: 4.8.0
+        lxml: 4.8.0
+        DendroPy: 4.5.2
+        jsonschema: 4.5.1
+        decorator: 4.4.2
+        sepp: 4.3.10
+        typing-extensions: 4.2.0
+        lz4: 4.0.0
+        cutadapt: '4.0'
+        zipp: 3.8.0
+        flit-core: 3.7.1
+        h5py: 3.6.0
+        widgetsnbextension: 3.6.0
+        matplotlib: 3.5.2
+        idna: '3.3'
+        ijson: 3.1.3
+        Jinja2: 3.1.2
+        threadpoolctl: 3.1.0
+        prompt-toolkit: 3.0.29
+        pyparsing: 3.0.9
+        requests: 2.27.1
+        pycparser: '2.21'
+        fastjsonschema: 2.15.3
+        Pygments: 2.12.0
+        networkx: 2.8.2
+        python-dateutil: 2.8.2
+        bokeh: 2.4.3
+        soupsieve: 2.3.1
+        biom-format: 2.1.10
+        MarkupSafe: 2.1.1
+        tzlocal: '2.1'
+        charset-normalizer: 2.0.12
+        asttokens: 2.0.5
+        tomli: 2.0.1
+        urllib3: 1.26.9
+        numpy: 1.22.4
+        six: 1.16.0
+        cffi: 1.15.0
+        py: 1.11.0
+        scipy: 1.8.1
+        Send2Trash: 1.8.0
+        PySocks: 1.7.1
+        backports.functools-lru-cache: 1.6.4
+        debugpy: 1.6.0
+        nest-asyncio: 1.5.5
+        cached-property: 1.5.2
+        xopen: 1.5.0
+        pandocfilters: 1.5.0
+        kiwisolver: 1.4.2
+        nose: 1.3.7
+        fastcluster: 1.2.6
+        pandas: 1.2.5
+        munkres: 1.1.4
+        iniconfig: 1.1.1
+        tinycss2: 1.1.1
+        jupyterlab-widgets: 1.1.0
+        joblib: 1.1.0
+        bibtexparser: 1.1.0
+        deblur: 1.1.0
+        emperor: 1.0.3
+        msgpack: 1.0.3
+        pluggy: 1.0.0
+        numba: 0.53.1
+        wheel: 0.37.1
+        llvmlite: 0.36.0
+        Cython: 0.29.30
+        scikit-learn: 0.24.1
+        unifrac: 0.20.3
+        future: 0.18.2
+        jedi: 0.18.1
+        pyrsistent: 0.18.1
+        terminado: 0.15.0
+        hdmedians: 0.14.2
+        prometheus-client: 0.14.1
+        statsmodels: 0.13.2
+        CacheControl: 0.12.11
+        lockfile: 0.12.2
+        seaborn: 0.11.2
+        isal: 0.11.1
+        cycler: 0.11.0
+        toml: 0.10.2
+        dnaio: 0.9.0
+        mistune: 0.8.4
+        executing: 0.8.3
+        parso: 0.8.3
+        pickleshare: 0.7.5
+        defusedxml: 0.7.1
+        ptyprocess: 0.7.0
+        brotlipy: 0.7.0
+        nbclient: 0.6.3
+        pynndescent: 0.5.7
+        scikit-bio: 0.5.6
+        umap-learn: 0.5.3
+        patsy: 0.5.2
+        webencodings: 0.5.1
+        gneiss: 0.4.6
+        colorama: 0.4.4
+        entrypoints: '0.4'
+        dill: 0.3.5.1
+        wcwidth: 0.2.5
+        pure-eval: 0.2.2
+        jupyterlab-pygments: 0.2.2
+        ipython-genutils: 0.2.0
+        backcall: 0.2.0
+        stack-data: 0.2.0
+        matplotlib-inline: 0.1.3

@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% load static %}
+<script src="{% static './main.js' %}"></script>
+{% block body %}
+<div class="container">
+
+<form action="/generate_visualization/" method="post">
+    {% csrf_token %}
+    <table class="table">
+        <tr>
+            <td>RunId</td>
+            <td>process?</td>
+            <td>Included in visualization?</td>
+        </tr>
+       <tr>
+            <td>ERR6004724</td>
+            <td id="lbl_ERR6004724">Ready</td>
+            <td><input id="chk_ERR6004724" type="checkbox" name="chk_ERR6004724" value="ERR6004724" ></td>
+       </tr>
+       <tr>
+            <td>ERR6004692</td>
+            <td id="lbl_ERR6004692"><button type="button" onclick="callDataCollectionAPI('ERR6004692');">Add</button></td>
+            <td><input id="chk_ERR6004692" type="checkbox" name="chk_ERR6004692" value="ERR6004692" disabled></td>
+        </tr>
+        <tr>
+            <td>ERR6004727</td>
+            <td id="lbl_ERR6004727"><button type="button" onclick="callDataCollectionAPI('ERR6004727');">Add</button></td>
+            <td><input id="chk_ERR6004727" type="checkbox" name="chk_ERR6004727" value="ERR6004727" disabled></td>
+       </tr>
+       <tr>
+            <td>ERR6004803</td>
+            <td id="lbl_ERR6004692"><button type="button" onclick="callDataCollectionAPI('ERR6004803');">Add</button></td>
+            <td><input id="chk_ERR6004803" type="checkbox" name="chk_ERR6004803" value="ERR6004803" disabled></td>
+        </tr>
+    
+
+    </table>
+    <div>
+        <input type="submit" name="btnRun" value="Generate Visualization">
+    </div>
+</form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        
+});
+
+    function callDataCollectionAPI(runId){
+        //call data collection API to process the run Id
+        $.ajax("http://44.232.220.91:8000", {
+            data : JSON.stringify({run_id: runId}),
+            contentType : 'application/json',
+            type : 'POST',
+        })
+        .done(function( data ) {
+            console.log(data);
+            console.log("task id returned "+data.task_id);
+            get_progress(data.task_id,runId);
+        });
+
+    }
+    async function get_progress(taskId,runId){
+        var completed = false;
+        while (!completed){
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+      try {
+        let res = await fetch(
+          "http://44.232.220.91:8000/celery-progress/"+taskId
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (!data.complete){
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")        
+                       
+        }
+        else
+        {
+            completed = true;
+            // $("#chk_"+runId).removeAttr("disabled");
+            get_status(runId);
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")  
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    }
+    async function get_status(runId){
+        var processed = false;
+        while (!processed){
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        try {
+        let res = await fetch(
+          "/api/check_run_status/"+runId
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (data.status != 2){
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")                    
+        }
+        else
+        {
+            processed = true;
+            $("#chk_"+runId).removeAttr("disabled");
+            $("#lbl_"+runId).html("Ready")  
+        }
+
+      } catch (err) {
+        console.log(err);
+      } 
+        
+        }
+    }
+</script>
+
+{% endblock %}
