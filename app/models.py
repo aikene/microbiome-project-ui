@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from awscicd import settings
+
 
 # Create your models here.
 class User(AbstractUser):
@@ -29,21 +31,21 @@ class History(models.Model):
 
 
 class Metadata(models.Model):
-    acc = models.TextField(unique=True, primary_key=True)
+    acc = models.TextField(unique=True, primary_key=True, verbose_name='Run ID')
     assay_type = models.TextField(blank=True, null=True)
-    center_name = models.TextField(blank=True, null=True)
+    center_name = models.TextField(blank=True, null=True, verbose_name="Center Name")
     consent = models.TextField(blank=True, null=True)
     experiment = models.TextField(blank=True, null=True)
     sample_name = models.TextField(blank=True, null=True)
     instrument = models.TextField(blank=True, null=True)
-    librarylayout = models.TextField(blank=True, null=True)
+    librarylayout = models.TextField(blank=True, null=True, verbose_name='Library Layout')
     libraryselection = models.TextField(blank=True, null=True)
     librarysource = models.TextField(blank=True, null=True)
     platform = models.TextField(blank=True, null=True)
     sample_acc = models.TextField(blank=True, null=True)
     biosample = models.TextField(blank=True, null=True)
     organism = models.TextField(blank=True, null=True)
-    sra_study = models.TextField(blank=True, null=True)
+    sra_study = models.TextField(blank=True, null=True, verbose_name="SRA Study ID")
     releasedate = models.DateTimeField(blank=True, null=True)
     bioproject = models.TextField(blank=True, null=True)
     mbytes = models.IntegerField(blank=True, null=True)
@@ -53,8 +55,8 @@ class Metadata(models.Model):
     library_name = models.TextField(blank=True, null=True)
     biosamplemodel_sam = models.TextField(blank=True, null=True)
     collection_date_sam = models.TextField(blank=True, null=True)
-    geo_loc_name_country_calc = models.TextField(blank=True, null=True)
-    geo_loc_name_country_continent_calc = models.TextField(blank=True, null=True)
+    geo_loc_name_country_calc = models.TextField(blank=True, null=True, verbose_name="Country")
+    geo_loc_name_country_continent_calc = models.TextField(blank=True, null=True, verbose_name="Continent")
     geo_loc_name_sam = models.TextField(blank=True, null=True)
     ena_first_public_run = models.TextField(blank=True, null=True)
     ena_last_update_run = models.TextField(blank=True, null=True)
@@ -86,7 +88,7 @@ class Results(models.Model):
 
 
 class Status(models.Model):
-    acc = models.CharField(max_length=255)
+    acc = models.CharField(max_length=255, primary_key=True)
     user_id = models.CharField(max_length=255, blank=True, null=True)
     status = models.SmallIntegerField()
     start_time = models.DateTimeField()
