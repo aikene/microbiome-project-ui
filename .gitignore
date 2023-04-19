@@ -14,4 +14,4 @@ awscicd/.env
 /ui-env/
 .DS_Store
 
-
+.vscode
