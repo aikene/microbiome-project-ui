@@ -1,0 +1,16 @@
+{% extends "layout_visualization.html" %}
+{% load static %}
+<script src="{% static './main.js' %}"></script>
+{% block body %}
+<div class="w-100">
+    <h4>Taxonomic Bar Plots</h4>
+    {% if "live" in chart_type  %}
+    <iframe style="width: 100%; height:100vh;" height="100%" src="/app/static/visualization/{{ uuid }}/taxonomy_results/index.html"></iframe>
+    {% else %}
+    <iframe style="width: 100%; height:100vh;" height="100%" src="/app/static/visualization/taxonomy_results/data/index.html"></iframe>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
