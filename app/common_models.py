@@ -35,4 +35,80 @@ class Distinct_SRA(models.Model):
         managed = False
         db_table = 'sra_view'
 
+class Center_Name(models.Model):
+    center_name = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
 
+    class Meta:
+        managed = False
+        db_table = 'center_name_view'
+
+class Distinct_Assay_Type(models.Model):
+    sra_study = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'sra_view'
+
+class Experiment_Name(models.Model):
+    experiment = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'experiment_name_view'
+
+
+class Sample_Acc(models.Model):
+    sample_acc = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'sample_acc_view'
+
+
+class Biosample(models.Model):
+    biosample = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'biosample_view'
+
+
+class Organism(models.Model):
+    organism = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'organism_view'
+
+
+class Bioproject(models.Model):
+    bioproject = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'bioproject_view'
+
+
+class Country(models.Model):
+    geo_loc_name_country_calc = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'country_view'
+
+
+class Continent(models.Model):
+    geo_loc_name_country_continent_calc = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'continent_view'

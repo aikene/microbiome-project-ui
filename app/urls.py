@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.contrib import admin
 from django.conf import settings
@@ -12,12 +12,13 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("profile/<str:username>", views.user_profile, name="profile"),
-    path("visualization/", views.visualization, name="visualization"),
     path("generate_visualization/", views.generate_visualization, name="generate_visualization"),
     path("feature_table_summary/<str:uuid>", views.feature_table_summary, name="feature_table_summary"),
     path("taxonomic_bar_plots/<str:uuid>", views.taxonomic_bar_plots, name="taxonomic_bar_plots"),
     path("demo_table_view/", views.demo_table_view, name="demo_table_view"),
-    path("api/check_run_status/<str:runId>",views.check_run_status, name="check_run_status")
+    path("api/check_run_status/<str:runId>",views.check_run_status, name="check_run_status"),
+    path("table/", include(("filter_table.urls", "filter_table"), namespace="tables")),
+    path("select2/", include("django_select2.urls")),
     # path("featuretable/", views.featuretable, name="featuretable"),
     # path("taxonomy/overview/<str:uuid>", views.taxonomy_overview, name="taxonomy_overview"),
     # path("featuretable/overview/<str:uuid>", views.featuretable_overview, name="featuretable_overview"),

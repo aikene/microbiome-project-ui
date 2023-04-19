@@ -7,14 +7,26 @@
 
 
 {% block body %}
-    <h1>Product table</h1>
-
-
-    {# Progress indicator #}
-    <div class="progress">
-        <div class="indeterminate"></div>
+<h1>Metadata Table with Filtered Criteria</h1>
+<div class="row justify-content-md-start">
+    <div class="col-md-auto">
+        <a href="{% url 'generate_visualization' %}">
+            <button class="btn btn-primary btn-lg" >
+                Get Visualizations
+            </button>
+        </a>
     </div>
+</div>
 
-    {# The actual table #}
-    {% render_table table %}
+
+{# Progress indicator #}
+<div class="progress">
+    <div class="indeterminate"></div>
+</div>
+
+{# The actual table #}
+{% render_table table %}
+<div class="progress">
+    <div class="indeterminate"></div>
+</div>
 {% endblock %}
