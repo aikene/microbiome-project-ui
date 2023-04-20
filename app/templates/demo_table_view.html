@@ -9,28 +9,24 @@
     <table class="table">
         <tr>
             <td>RunId</td>
-            <td>process?</td>
+            <td>Processed?</td>
             <td>Included in visualization?</td>
         </tr>
+       
        <tr>
-            <td>ERR6004724</td>
-            <td id="lbl_ERR6004724">Ready</td>
-            <td><input id="chk_ERR6004724" type="checkbox" name="chk_ERR6004724" value="ERR6004724" ></td>
-       </tr>
-       <tr>
-            <td>ERR6004692</td>
-            <td id="lbl_ERR6004692"><button type="button" onclick="callDataCollectionAPI('ERR6004692');">Add</button></td>
-            <td><input id="chk_ERR6004692" type="checkbox" name="chk_ERR6004692" value="ERR6004692" disabled></td>
+            <td>SRR3950643</td>
+            <td id="lbl_SRR3950643"><button type="button" onclick="callDataCollectionAPI('SRR3950643');">Add</button></td>
+            <td><input id="chk_SRR3950643" type="checkbox" name="chk_SRR3950643" value="SRR3950643" disabled></td>
         </tr>
         <tr>
-            <td>ERR6004727</td>
-            <td id="lbl_ERR6004727"><button type="button" onclick="callDataCollectionAPI('ERR6004727');">Add</button></td>
-            <td><input id="chk_ERR6004727" type="checkbox" name="chk_ERR6004727" value="ERR6004727" disabled></td>
+            <td>SRR1204477</td>
+            <td id="lbl_SRR1204477"><button type="button" onclick="callDataCollectionAPI('SRR1204477');">Add</button></td>
+            <td><input id="chk_SRR1204477" type="checkbox" name="chk_SRR1204477" value="SRR1204477" disabled></td>
        </tr>
        <tr>
-            <td>ERR6004803</td>
-            <td id="lbl_ERR6004692"><button type="button" onclick="callDataCollectionAPI('ERR6004803');">Add</button></td>
-            <td><input id="chk_ERR6004803" type="checkbox" name="chk_ERR6004803" value="ERR6004803" disabled></td>
+            <td>SRR16121144</td>
+            <td id="lbl_SRR16121144"><button type="button" onclick="callDataCollectionAPI('SRR16121144');">Add</button></td>
+            <td><input id="chk_SRR16121144" type="checkbox" name="chk_SRR16121144" value="SRR16121144" disabled></td>
         </tr>
     
 
@@ -74,7 +70,7 @@
         let data = await res.json();
         console.log(data)
         if (!data.complete){
-            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")        
+            $("#lbl_"+runId).html("<div class=\"progress align-middle\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")        
                        
         }
         else
@@ -82,7 +78,7 @@
             completed = true;
             // $("#chk_"+runId).removeAttr("disabled");
             get_status(runId);
-            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")  
+            $("#lbl_"+runId).html("<div class=\"progress align-middle\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")  
         }
 
       } catch (err) {
@@ -103,7 +99,7 @@
         let data = await res.json();
         console.log(data)
         if (data.status != 2){
-            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")                    
+            $("#lbl_"+runId).html("<div class=\"progress align-middle\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")                    
         }
         else
         {
