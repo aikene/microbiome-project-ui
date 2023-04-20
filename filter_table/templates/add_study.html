@@ -1,3 +1,82 @@
 {% load static %}
-<a href='{% url 'tables:add_study' record.acc %}' class='btn btn-success'>Add</a>
+<a id="lbl_{{record.acc}}">
+<button id="lbl_{{record.acc}}_btn" onclick="callDataCollectionAPI('{{ record.acc }}');" class='btn btn-success'>Add</button>
 <!--<a id="{{record.acc}}" href='#' class='btn btn-success add-study' data-acc="{{ record.acc }}">Add</a>-->
+</a>
+<script>
+    $(document).ready(function() {});
+
+    function callDataCollectionAPI(runId) {
+        console.log(runId)
+        //call data collection API to process the run Id
+        $.ajax("http://44.232.220.91:8000", {
+            data : JSON.stringify({run_id: runId}),
+            contentType : 'application/json',
+            type : 'POST',
+        })
+        .done(function( data ) {
+            console.log(data);
+            console.log("task id returned "+data.task_id);
+            get_progress(data.task_id,runId);
+        });
+    }
+
+        async function get_progress(taskId,runId){
+        var completed = false;
+        while (!completed){
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+      try {
+        let res = await fetch(
+          "http://44.232.220.91:8000/celery-progress/"+taskId
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (!data.complete){
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")
+
+        }
+        else
+        {
+            completed = true;
+            get_status(runId);
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    }
+
+        async function get_status(runId){
+        var processed = false;
+        while (!processed){
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        try {
+        let res = await fetch(
+          "/api/check_run_status/"+runId
+        );
+
+        let data = await res.json();
+        console.log(data)
+        if (data.status != 2){
+            $("#lbl_"+runId).html("<div class=\"progress mb-4\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:100%;\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>")
+        }
+        else
+        {
+            processed = true;
+            //$("#chk_"+runId).removeAttr("disabled");
+            $("#lbl_"+runId).html("Ready")
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+
+        }
+    }
+</script>

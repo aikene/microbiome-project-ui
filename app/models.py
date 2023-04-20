@@ -30,6 +30,18 @@ class History(models.Model):
         db_table = 'history'
 
 
+class Status(models.Model):
+    acc = models.CharField(unique=True, max_length=255, primary_key=True)
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+    status = models.SmallIntegerField()
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'status'
+
+
 class Metadata(models.Model):
     acc = models.TextField(unique=True, primary_key=True, verbose_name='Run ID')
     assay_type = models.TextField(blank=True, null=True)
@@ -55,21 +67,21 @@ class Metadata(models.Model):
     library_name = models.TextField(blank=True, null=True)
     biosamplemodel_sam = models.TextField(blank=True, null=True)
     collection_date_sam = models.TextField(blank=True, null=True)
-    geo_loc_name_country_calc = models.TextField(blank=True, null=True, verbose_name="Country")
-    geo_loc_name_country_continent_calc = models.TextField(blank=True, null=True, verbose_name="Continent")
+    geo_loc_name_country_calc = models.TextField(blank=True, null=True)
+    geo_loc_name_country_continent_calc = models.TextField(blank=True, null=True)
     geo_loc_name_sam = models.TextField(blank=True, null=True)
     ena_first_public_run = models.TextField(blank=True, null=True)
     ena_last_update_run = models.TextField(blank=True, null=True)
     sample_name_sam = models.TextField(blank=True, null=True)
     datastore_filetype = models.TextField(blank=True, null=True)
+    attributes = models.TextField(blank=True, null=True)
     jattr = models.TextField(blank=True, null=True)
+    ethnicity_sam = models.TextField(blank=True, null=True)
     race_sam = models.TextField(blank=True, null=True)
-    body_site_sam = models.TextField(blank=True, null=True)
-    source_name_sam = models.TextField(blank=True, null=True)
-    bytes = models.TextField(blank=True, null=True)
-    tissue_sam = models.TextField(blank=True, null=True)
-    cell_type_sam = models.TextField(blank=True, null=True)
-    sex_calc = models.TextField(blank=True, null=True)
+    race_ethnicity = models.TextField(blank=True, null=True)
+    host_sam = models.TextField(blank=True, null=True)
+    gender_extract = models.TextField(blank=True, null=True)
+    gender = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -85,15 +97,3 @@ class Results(models.Model):
     class Meta:
         managed = False
         db_table = 'results'
-
-
-class Status(models.Model):
-    acc = models.CharField(max_length=255, primary_key=True)
-    user_id = models.CharField(max_length=255, blank=True, null=True)
-    status = models.SmallIntegerField()
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'status'

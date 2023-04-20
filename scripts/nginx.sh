@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 sudo systemctl daemon-reload
-systemctl restart gunicorn.service
+sudo systemctl restart gunicorn.service
 sudo cp /home/ubuntu/django-aws_cicd/nginx/nginx.conf /etc/nginx/sites-available/django-aws_cicd
 sudo ln -s /etc/nginx/sites-available/django-aws_cicd /etc/nginx/sites-enabled
 sudo nginx -t

@@ -31,9 +31,9 @@ class MetadataHTMxTableView2(SingleTableMixin, FilterView):
         if filter_dict:
             exclude = set(self.all_fields) - set(filter_dict.keys())
         else:
-            exclude = ('jattr',)
+            exclude = ('attributes',)
         return {
-            'exclude': ('jattr',),
+            'exclude': ('attributes', 'jattr',),
         }
 
     def get_table_data(self):

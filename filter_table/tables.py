@@ -22,6 +22,10 @@ class SRAMetadataTable(tables.Table):
         template_name = "./bootstrap_htmx.html"
         include = ('acc',)
 
+    # def render_add(self, record):
+    #
+    #     return '-'
+
 
 class MetadataFilter(django_filters.FilterSet):
     search_query = django_filters.CharFilter(method='universal_search',
