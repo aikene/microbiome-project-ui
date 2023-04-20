@@ -30,20 +30,9 @@ class History(models.Model):
         db_table = 'history'
 
 
-class Status(models.Model):
-    acc = models.CharField(unique=True, max_length=255, primary_key=True)
-    user_id = models.CharField(max_length=255, blank=True, null=True)
-    status = models.SmallIntegerField()
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'status'
-
-
 class Metadata(models.Model):
     acc = models.TextField(unique=True, primary_key=True, verbose_name='Run ID')
+    # status = models.ForeignKey("Status", on_delete=models.CASCADE, related_name='Status')
     assay_type = models.TextField(blank=True, null=True)
     center_name = models.TextField(blank=True, null=True, verbose_name="Center Name")
     consent = models.TextField(blank=True, null=True)
@@ -86,6 +75,21 @@ class Metadata(models.Model):
     class Meta:
         managed = False
         db_table = 'metadata'
+
+
+class Status(models.Model):
+    acc = models.OneToOneField(Metadata, models.DO_NOTHING, db_column='acc', primary_key=True)
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    public = models.BooleanField()
+    status = models.SmallIntegerField()
+    output_path = models.CharField(max_length=1024, blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'status'
 
 
 class Results(models.Model):
