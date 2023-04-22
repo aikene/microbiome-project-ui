@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import shutil
-import urllib.parse
 from datetime import datetime
 from zipfile import ZipFile
 
@@ -11,16 +10,44 @@ import psycopg2
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import reverse
+from django.urls import reverse_lazy
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+from . import utils
 from .forms import MetadataForm
-from .models import User
+from .models import Results, Status, User
 
 # Create your views here.
 logger = logging.getLogger('django')
+
+
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'password_reset.html'
+    email_template_name = 'email_template_password_reset.html'
+    subject_template_name = 'password_reset_subject'
+    success_url = reverse_lazy('password_reset_sent_email')
+
+
+class TokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return str(user.is_active) + str(user.pk) + str(timestamp)
+
+
+account_activation_token = TokenGenerator()
+
 
 
 def home(request):
@@ -82,7 +109,7 @@ def featuretable(request):
 #     # render the HTML template with the context dictionary
 #     return render(request, '/visualization/index.html', context)
 
-# API end point to get run status by run Id (/api/check_run_status/{runId})
+# API end point to get run status by run ID (/api/check_run_status/{runId})
 def check_run_status(request, runId):
     conn = psycopg2.connect(
         database=os.environ.get('DB_NAME'),
@@ -243,37 +270,191 @@ def register(request):
         first_name = request.POST["first-name"]
         last_name = request.POST["last-name"]
 
+        # Check if the given email is already registered
+        if User.objects.filter(email__iexact=email).count() > 0:
+            return render(request, "register.html", {"error_message": [f"{email} is already registered."]})
+
+        # Check if the given username is already registered
+        if User.objects.filter(username__iexact=username).count() > 0:
+            return render(request, "register.html", {"error_message": [f"{username} is already taken."]})
+
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "register.html", {
-                "message": "Passwords must match."
-            })
+            return render(request, "register.html", {"error_message": ["Passwords must match."]})
+
+        # Validate password
+        success, msg = utils.validate_password(password)
+
+        if not success:
+            return render(request, "register.html", {"error_message": [msg]})
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.first_name = first_name
             user.last_name = last_name
+            user.is_active = False
             user.save()
         except IntegrityError:
             return render(request, "register.html", {
-                "message": "Username already taken."
+                "error_message": ["Username already taken."]
             })
-        login(request, user)
-        return HttpResponseRedirect(reverse("home"))
+        # login(request, user)
+        current_site = get_current_site(request)
+
+        mail_subject = 'Activate your account.'
+        message = render_to_string('email_template_verification.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+        })
+
+        send_mail(mail_subject, message, 'microbiome.platform@gmail.com', [email], fail_silently=False)
+
+        return render(request, "register.html", {
+            "success_message": [f"We sent an email to {email}.", "Please confirm your email address to complete your "
+                                                                 "registration."]
+        })
     else:
         return render(request, "register.html")
 
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return render(request, "login.html", {"success_message": f"Your account is activated."})
+    else:
+        return HttpResponse('Activation link is invalid!')
+
+
+def password_reset_sent_email(request):
+    return render(request, "password_reset_sent_email.html")
+
+
 @login_required(login_url="login")
-def user_profile(request, username):
-    username = User.objects.get(username=request.user)
+def status(request, username, page=1):
+    status_list = Status.objects.filter(user_id=username)
+    paginator = Paginator(status_list, per_page=16)
+    page_object = paginator.page(page)
+
+    return render(request, "status.html", {
+        "username": username,
+        "statuses": page_object
+    })
+
+
+@login_required(login_url="login")
+def delete_account_confirm(request, username):
+    return render(request, "delete_account.html", {"username": username})
+
+
+@login_required(login_url="login")
+def delete_account(request, username):
+    if request.method == "POST":
+        logout(request)
+        user = User.objects.get(username=username)
+        user.delete()
+
+        return render(request, "register.html", {
+            "success_message": [f"Your account has been deleted successfully."]
+        })
+
+    else:
+        return HttpResponseRedirect(reverse("home"))
+
+
+@login_required(login_url="login")
+def user_profile(request, username, page=1, show_history=0):
+    user = User.objects.get(username=username)
+
+    result_list = Results.objects.all();
+    paginator = Paginator(result_list, per_page=16)
+    page_object = paginator.page(page)
 
     return render(request, "user_profile.html", {
         "username": username,
-        "full_name": username.get_full_name,
-        "email": username.email,
-        "date_joined": username.date_joined,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "date_joined": user.date_joined.date(),
+        "results": page_object,
+        "show_history": show_history
     })
+
+
+@login_required(login_url="login")
+def edit_profile(request, field):
+    """
+    Edit the user and then return the serialized data of the object.
+    """
+    if request.method == "PUT":
+        # Get the form data
+        user = User.objects.get(username=request.user.username)
+        data = json.loads(request.body)
+        updated_content = data.get("content")
+
+        # Update the user
+        if field == "firstName":
+            if updated_content is not None and updated_content != '':
+                user.first_name = data["content"]
+            updated_content = user.first_name
+
+        elif field == "lastName":
+            if updated_content is not None and updated_content != '':
+                user.last_name = data["content"]
+            updated_content = user.last_name
+
+        user.save()
+        # Return updated_content
+        return JsonResponse({"content": updated_content})
+
+    # Edit must be via PUT
+    else:
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+
+@login_required(login_url="login")
+def change_password(request):
+    if request.method != "PUT":
+        # PUT method is required
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+    # Get the form data
+    data = json.loads(request.body)
+
+    current_password = data.get("currPwd")
+    new_password = data.get("newPwd")
+    confirm_new_password = data.get("confNewPwd")
+
+    user = User.objects.get(username=request.user.username)
+
+    # Check current password
+    if not user.check_password(current_password):
+        return JsonResponse({"success": False, "message": "Current password was not correct."})
+
+    # Check if passwords match
+    if new_password != confirm_new_password:
+        return JsonResponse({"success": False, "message": "New passwords don't match."})
+
+    # Check if new password is different from current password
+    if new_password == current_password:
+        return JsonResponse({"success": False, "message": "New password must be different from current password."})
+
+    # Validate password
+    success, msg = utils.validate_password(new_password)
+
+    if success:
+        user.set_password(new_password)
+        user.save()
+
+    # Return new password
+    return JsonResponse({"success": success, "message": msg})
