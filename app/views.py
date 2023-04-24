@@ -25,10 +25,12 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.db.models import Q
 
 from . import utils
 from .forms import MetadataForm
-from .models import Results, Status, User
+from .models import Results, Status, User, Metadata
+from .filter import ListFilterField
 
 # Create your views here.
 logger = logging.getLogger('django')
@@ -122,19 +124,31 @@ def check_run_status(request, runId):
     cur = conn.cursor()
     cur.execute("SELECT * FROM status where acc = %s", (runId,))
     row = cur.fetchone()
+
+    if not row:
+        if request.user.is_authenticated:
+            cur.execute(f"""INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at) 
+                                                VALUES ('{runId}', '{request.user.id}', '{request.user.email}', '1', 0, 
+                                                NOW(), NOW())""")
+        else:
+            cur.execute(f"""INSERT INTO status (acc, public, status, created_at, updated_at) VALUES ('{runId}', '1', 0, NOW(), NOW())""")
+
+        conn.commit()
+        cur.execute("SELECT * FROM status where acc = %s", (runId,))
+        row = cur.fetchone()
+
+    columns = [desc[0] for desc in cur.description]
+    row_dict = dict(zip(columns, row))
+    # Convert any datetime objects to strings
+    for key, value in row_dict.items():
+        if isinstance(value, datetime):
+            row_dict[key] = value.strftime("%m/%d/%Y")
+    json_data = json.dumps(row_dict)
+
     cur.close()
     conn.close()
-    if row:
-        columns = [desc[0] for desc in cur.description]
-        row_dict = dict(zip(columns, row))
-        # Convert any datetime objects to strings
-        for key, value in row_dict.items():
-            if isinstance(value, datetime):
-                row_dict[key] = value.strftime("%m/%d/%Y")
-        json_data = json.dumps(row_dict)
-        return HttpResponse(json_data, content_type='application/json')
-    else:
-        return HttpResponse(status=404)
+
+    return HttpResponse(json_data, content_type='application/json')
 
 
 def demo_table_view(request):
@@ -353,6 +367,18 @@ def status(request, username, page=1):
 
 
 @login_required(login_url="login")
+def history(request, username, page=1):
+    metadata_list = Metadata.objects.all()
+    paginator = Paginator(metadata_list, per_page=20)
+    page_object = paginator.page(page)
+
+    return render(request, "history.html", {
+        "username": username,
+        "histories": page_object
+    })
+
+
+@login_required(login_url="login")
 def delete_account_confirm(request, username):
     return render(request, "delete_account.html", {"username": username})
 
@@ -458,3 +484,130 @@ def change_password(request):
 
     # Return new password
     return JsonResponse({"success": success, "message": msg})
+
+
+def build_query(filter_values, field):
+    queries = [Q(**{field: f}) for f in filter_values]
+
+    # Take one Q object from the list
+    query = queries.pop()
+
+    # Or the Q object with the ones remaining in the list
+    for item in queries:
+        query |= item
+
+    return query
+
+
+def search(request, page=1, order_by='acc', direction='asc'):
+    if request.method == 'POST':
+        metadata_fields = ['librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
+                           'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc']
+
+        query_set_metadata = None
+
+        search_criteria = {}
+
+        for metadata_field in metadata_fields:
+            filter_values = request.POST.getlist(metadata_field)
+
+            if not filter_values:
+                continue
+
+            search_criteria[metadata_field] = filter_values
+            query = build_query(filter_values=filter_values, field=metadata_field)
+
+            if query_set_metadata:
+                query_set_metadata = query_set_metadata.filter(query)
+            else:
+                query_set_metadata = Metadata.objects.filter(query)
+
+        num_records = query_set_metadata.count()
+
+        paginator = Paginator(query_set_metadata.order_by(order_by), per_page=20)
+        page_object = paginator.page(page)
+
+        query_set_in_progress = Status.objects.filter(status=0).values_list('acc', flat=True) | Status.objects.filter(
+            status=1).values_list('acc', flat=True)
+        query_set_complete = Status.objects.filter(status=2).values_list('acc', flat=True)
+        query_set_error = Status.objects.filter(status=3).values_list('acc', flat=True)
+
+        in_progress_accs = set(list(query_set_in_progress))
+        completed_accs = set(list(query_set_complete))
+        errored_accs = set(list(query_set_error))
+
+        if request.user.is_authenticated:
+            username = request.user.username
+        else:
+            username = None
+
+        return render(request, 'table.html', {'metadata': page_object,
+                                              'in_progress_accs': in_progress_accs,
+                                              'completed_accs': completed_accs,
+                                              'errored_accs': errored_accs,
+                                              'username': username,
+                                              'order_by': order_by,
+                                              'direction': direction,
+                                              'num_records': num_records,
+                                              'search_criteria': json.dumps(search_criteria)})
+    elif request.method == 'GET':
+
+        if direction == 'desc':
+            ordering = '-{}'.format(order_by)
+        else:
+            ordering = order_by
+
+        query_set_metadata = None
+        search_criteria_json = request.GET.get('search_criteria')
+
+        search_criteria = json.loads(search_criteria_json)
+
+        for metadata_field, filter_values in search_criteria.items():
+            if not filter_values:
+                continue
+
+            query = build_query(filter_values=filter_values, field=metadata_field)
+
+            if query_set_metadata:
+                query_set_metadata = query_set_metadata.filter(query)
+            else:
+                query_set_metadata = Metadata.objects.filter(query)
+
+        paginator = Paginator(query_set_metadata.order_by(ordering), per_page=20)
+        page_object = paginator.page(page)
+
+        num_records = query_set_metadata.count()
+
+        query_set_in_progress = Status.objects.filter(status=0).values_list('acc', flat=True) | Status.objects.filter(
+            status=1).values_list('acc', flat=True)
+        query_set_complete = Status.objects.filter(status=2).values_list('acc', flat=True)
+        query_set_error = Status.objects.filter(status=3).values_list('acc', flat=True)
+
+        in_progress_accs = set(list(query_set_in_progress))
+        completed_accs = set(list(query_set_complete))
+        errored_accs = set(list(query_set_error))
+
+        if request.user.is_authenticated:
+            username = request.user.username
+        else:
+            username = None
+
+        return render(request, 'table.html', {'metadata': page_object,
+                                              'in_progress_accs': in_progress_accs,
+                                              'completed_accs': completed_accs,
+                                              'errored_accs': errored_accs,
+                                              'username': username,
+                                              'order_by': order_by,
+                                              'direction': direction,
+                                              'num_records': num_records,
+                                              'search_criteria': json.dumps(search_criteria)})
+
+
+
+
+
+
+
+
+    else:
+        return render(request, 'page_not_found.html')

@@ -22,7 +22,7 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
-    path('filtered_table/', include('filter_table.urls')),
+    # path('filtered_table/', include('filter_table.urls')),
     path('password-reset-confirm/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'),
          name='password_reset_confirm'),

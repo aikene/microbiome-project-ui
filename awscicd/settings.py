@@ -108,16 +108,16 @@ environ.Env.read_env()
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'NcbiSraPostgress',
-        'USER': 'postgres',
-        'PASSWORD': 'ThisIsAMasterPassword',
-        'HOST': 'ncbi-sra-postgres-cluster.cluster-ro-cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'NcbiSraPostgress',
+#         'USER': 'postgres',
+#         'PASSWORD': 'ThisIsAMasterPassword',
+#         'HOST': 'ncbi-sra-postgres-cluster.cluster-ro-cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 AUTH_USER_MODEL = 'app.User'
 
@@ -196,16 +196,16 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
+}
 
 CACHES = {
     'default': {
@@ -215,11 +215,11 @@ CACHES = {
 }
 
 # Email Service Variables
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_PORT = 587
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'email-smtp.us-west-2.amazonaws.com'
-EMAIL_HOST_USER = 'AKIA54K7YF4RHHETBLVL'
-EMAIL_HOST_PASSWORD = 'BEHviG5XS/8t5uNdntnW8XFbCXljHKn6tVlJAsb1Pfg6'
-DEFAULT_FROM_EMAIL = 'microbiome.platform@gmail.com'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
