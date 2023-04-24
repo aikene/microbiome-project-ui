@@ -108,17 +108,6 @@ environ.Env.read_env()
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'NcbiSraPostgress',
-#         'USER': 'postgres',
-#         'PASSWORD': 'ThisIsAMasterPassword',
-#         'HOST': 'ncbi-sra-postgres-cluster.cluster-ro-cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
-#         'PORT': '5432',
-#     }
-# }
-
 AUTH_USER_MODEL = 'app.User'
 
 # Password validation
