@@ -17,6 +17,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -25,12 +26,10 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.db.models import Q
 
 from . import utils
 from .forms import MetadataForm
-from .models import Results, Status, User, Metadata
-from .filter import ListFilterField
+from .models import Metadata, Results, Status, User
 
 # Create your views here.
 logger = logging.getLogger('django')
