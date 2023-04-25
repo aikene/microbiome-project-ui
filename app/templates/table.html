@@ -156,9 +156,9 @@ Search | {{ username }}
                                 {% endif %}
                             {% else %}
                                 {% if single_metadata.acc in selected_visual %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked disabled></td>
                                 {% else %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" disabled></td>
                                 {% endif %}
                             {% endif %}
 
