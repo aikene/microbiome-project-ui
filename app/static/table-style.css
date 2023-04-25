@@ -1,6 +1,6 @@
 /* Table style */
 .table-container {
-    overflow:auto;
+    overflow: auto;
 }
 
 .table-container th.asc:after {
@@ -132,4 +132,24 @@
         left: 107%;
         right: -8%;
     }
+}
+
+.table-container-generic {
+    width: auto;
+    margin: 0;
+    padding: 20px 40px;
+}
+
+.table-generic {
+    table-layout: fixed;
+}
+
+.table-generic-td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.table-generic-th {
+    overflow: hidden;
 }

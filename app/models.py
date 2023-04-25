@@ -5,6 +5,7 @@ from awscicd import settings
 
 
 class User(AbstractUser):
+    email_notification = models.BooleanField(default=True)
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
@@ -19,10 +20,91 @@ class User(AbstractUser):
         db_table = 'app_user'
 
 
+class AuthGroup(models.Model):
+    name = models.CharField(unique=True, max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group'
+
+
+class AuthGroupPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group_permissions'
+        unique_together = (('group', 'permission'),)
+
+
+class AuthPermission(models.Model):
+    name = models.CharField(max_length=255)
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    codename = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_permission'
+        unique_together = (('content_type', 'codename'),)
+
+
+
+
+class DjangoContentType(models.Model):
+    app_label = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'django_content_type'
+        unique_together = (('app_label', 'model'),)
+
+
+class DjangoMigrations(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    app = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    applied = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_migrations'
+
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(primary_key=True, max_length=40)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_session'
+
+
 class History(models.Model):
     user_id = models.CharField(max_length=255)
     time_stamp = models.CharField(max_length=255)
-    task_id = models.CharField(max_length=255)
+    assay_type = models.TextField(blank=True, null=True)
+    bioproject = models.TextField(blank=True, null=True)
+    biosample = models.TextField(blank=True, null=True)
+    breed_sam = models.TextField(blank=True, null=True)
+    center_name = models.TextField(blank=True, null=True)
+    country = models.TextField(blank=True, null=True)
+    continent = models.TextField(blank=True, null=True)
+    cultivar_sam = models.TextField(blank=True, null=True)
+    ecotype_same = models.TextField(blank=True, null=True)
+    experiment_name = models.TextField(blank=True, null=True)
+    gender = models.TextField(blank=True, null=True)
+    isolate_sam = models.TextField(blank=True, null=True)
+    library_layout = models.TextField(blank=True, null=True)
+    library_selection = models.TextField(blank=True, null=True)
+    organism = models.TextField(blank=True, null=True)
+    sample_acc = models.TextField(blank=True, null=True)
+    sra_study = models.TextField(blank=True, null=True)
+    strain_sam = models.TextField(blank=True, null=True)
+    search_id = models.AutoField(primary_key=True)
 
     class Meta:
         managed = False
@@ -30,22 +112,21 @@ class History(models.Model):
 
 
 class Metadata(models.Model):
-    acc = models.TextField(unique=True, primary_key=True, verbose_name='Run ID')
-    # status = models.ForeignKey("Status", on_delete=models.CASCADE, related_name='Status')
+    acc = models.TextField(primary_key=True)
     assay_type = models.TextField(blank=True, null=True)
-    center_name = models.TextField(blank=True, null=True, verbose_name="Center Name")
+    center_name = models.TextField(blank=True, null=True)
     consent = models.TextField(blank=True, null=True)
     experiment = models.TextField(blank=True, null=True)
     sample_name = models.TextField(blank=True, null=True)
     instrument = models.TextField(blank=True, null=True)
-    librarylayout = models.TextField(blank=True, null=True, verbose_name='Library Layout')
+    librarylayout = models.TextField(blank=True, null=True)
     libraryselection = models.TextField(blank=True, null=True)
     librarysource = models.TextField(blank=True, null=True)
     platform = models.TextField(blank=True, null=True)
     sample_acc = models.TextField(blank=True, null=True)
     biosample = models.TextField(blank=True, null=True)
     organism = models.TextField(blank=True, null=True)
-    sra_study = models.TextField(blank=True, null=True, verbose_name="SRA Study ID")
+    sra_study = models.TextField(blank=True, null=True)
     releasedate = models.DateTimeField(blank=True, null=True)
     bioproject = models.TextField(blank=True, null=True)
     mbytes = models.IntegerField(blank=True, null=True)
@@ -64,11 +145,12 @@ class Metadata(models.Model):
     datastore_filetype = models.TextField(blank=True, null=True)
     attributes = models.TextField(blank=True, null=True)
     jattr = models.TextField(blank=True, null=True)
-    ethnicity_sam = models.TextField(blank=True, null=True)
-    race_sam = models.TextField(blank=True, null=True)
+    ecotype_sam = models.TextField(blank=True, null=True)
+    cultivar_sam = models.TextField(blank=True, null=True)
+    breed_sam = models.TextField(blank=True, null=True)
+    strain_sam = models.TextField(blank=True, null=True)
+    iosolate_sam = models.TextField(blank=True, null=True)
     race_ethnicity = models.TextField(blank=True, null=True)
-    host_sam = models.TextField(blank=True, null=True)
-    gender_extract = models.TextField(blank=True, null=True)
     gender = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -76,19 +158,15 @@ class Metadata(models.Model):
         db_table = 'metadata'
 
 
-class Status(models.Model):
-    acc = models.OneToOneField(Metadata, models.DO_NOTHING, db_column='acc', primary_key=True)
-    user_id = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255, blank=True, null=True)
-    public = models.BooleanField()
-    status = models.SmallIntegerField()
-    output_path = models.CharField(max_length=1024, blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+class PostProcessorStudy(models.Model):
+    id = models.TextField(primary_key=True)
+    library_layout = models.CharField(max_length=100)
+    feature_table_path = models.TextField()
+    taxonomy_results_path = models.TextField()
 
     class Meta:
         managed = False
-        db_table = 'status'
+        db_table = 'post_processor_study'
 
 
 class Results(models.Model):
@@ -101,3 +179,19 @@ class Results(models.Model):
     class Meta:
         managed = False
         db_table = 'results'
+
+
+class Status(models.Model):
+    acc = models.OneToOneField(Metadata, models.DO_NOTHING, db_column='acc', primary_key=True)
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    public = models.BooleanField()
+    status = models.SmallIntegerField()
+    output_path = models.CharField(max_length=1024, blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    email_notification = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'status'

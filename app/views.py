@@ -4,6 +4,7 @@ import os
 import shutil
 from datetime import datetime
 from zipfile import ZipFile
+from time import time
 
 import boto3
 import psycopg2
@@ -29,7 +30,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from . import utils
 from .forms import MetadataForm
-from .models import Metadata, Results, Status, User
+from .models import Metadata, Results, Status, User, History
 
 # Create your views here.
 logger = logging.getLogger('django')
@@ -126,11 +127,12 @@ def check_run_status(request, runId):
 
     if not row:
         if request.user.is_authenticated:
-            cur.execute(f"""INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at) 
+            cur.execute(f"""INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at, email_notification) 
                                                 VALUES ('{runId}', '{request.user.id}', '{request.user.email}', '1', 0, 
-                                                NOW(), NOW())""")
+                                                NOW(), NOW(), {request.user.email_notification})""")
         else:
-            cur.execute(f"""INSERT INTO status (acc, public, status, created_at, updated_at) VALUES ('{runId}', '1', 0, NOW(), NOW())""")
+            cur.execute(f"""INSERT INTO status (acc, public, status, created_at, updated_at, email_notification) 
+            VALUES ('{runId}', '1', 0, NOW(), NOW(), FALSE)""")
 
         conn.commit()
         cur.execute("SELECT * FROM status where acc = %s", (runId,))
@@ -367,13 +369,13 @@ def status(request, username, page=1):
 
 @login_required(login_url="login")
 def history(request, username, page=1):
-    metadata_list = Metadata.objects.all()
-    paginator = Paginator(metadata_list, per_page=20)
+    search_history_list = History.objects.filter(user_id=username)
+    paginator = Paginator(search_history_list, per_page=20)
     page_object = paginator.page(page)
 
     return render(request, "history.html", {
         "username": username,
-        "histories": page_object
+        "searches": page_object
     })
 
 
@@ -499,6 +501,7 @@ def build_query(filter_values, field):
 
 
 def search(request, page=1, order_by='acc', direction='asc'):
+    t0 = time()
     if request.method == 'POST':
         metadata_fields = ['librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
                            'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc']
@@ -508,6 +511,7 @@ def search(request, page=1, order_by='acc', direction='asc'):
         search_criteria = {}
 
         for metadata_field in metadata_fields:
+            t_init = time()
             filter_values = request.POST.getlist(metadata_field)
 
             if not filter_values:
@@ -521,24 +525,68 @@ def search(request, page=1, order_by='acc', direction='asc'):
             else:
                 query_set_metadata = Metadata.objects.filter(query)
 
+            t_finish = time()
+            print(f'Built {metadata_field}: {t_finish - t_init}')
+
+        t1 = time()
+        print(f'Built Query sets: {t1 - t0}')
+
         num_records = query_set_metadata.count()
+
+        t2 = time()
+        print(f'num_records: {t2 - t1}')
 
         paginator = Paginator(query_set_metadata.order_by(order_by), per_page=20)
         page_object = paginator.page(page)
+
+        t3 = time()
+        print(f'pagination: {t3 - t2}')
 
         query_set_in_progress = Status.objects.filter(status=0).values_list('acc', flat=True) | Status.objects.filter(
             status=1).values_list('acc', flat=True)
         query_set_complete = Status.objects.filter(status=2).values_list('acc', flat=True)
         query_set_error = Status.objects.filter(status=3).values_list('acc', flat=True)
 
+        t4 = time()
+        print(f'build query sets: {t4 - t3}')
+
         in_progress_accs = set(list(query_set_in_progress))
         completed_accs = set(list(query_set_complete))
         errored_accs = set(list(query_set_error))
 
+        t5 = time()
+        print(f'Create sets: {t5 - t4}')
+
         if request.user.is_authenticated:
             username = request.user.username
+
+            # Add record in history table
+            history = History(user_id=username,
+                              time_stamp=datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
+                              assay_type=utils.stringify_list(search_criteria.get('assay_type', None)),
+                              bioproject=utils.stringify_list(search_criteria.get('bioproject', None)),
+                              biosample=utils.stringify_list(search_criteria.get('biosample', None)),
+                              breed_sam=utils.stringify_list(search_criteria.get('breed_sam', None)),
+                              center_name=utils.stringify_list(search_criteria.get('center_name', None)),
+                              country=utils.stringify_list(search_criteria.get('geo_loc_name_country_calc', None)),
+                              continent=utils.stringify_list(search_criteria.get('geo_loc_name_country_continent_calc', None)),
+                              cultivar_sam=utils.stringify_list(search_criteria.get('cultivar_sam', None)),
+                              ecotype_same=utils.stringify_list(search_criteria.get('ecotype_same', None)),
+                              experiment_name=utils.stringify_list(search_criteria.get('experiment', None)),
+                              gender=utils.stringify_list(search_criteria.get('gender', None)),
+                              isolate_sam=utils.stringify_list(search_criteria.get('isolate_sam', None)),
+                              library_layout=utils.stringify_list(search_criteria.get('librarylayout', None)),
+                              library_selection=utils.stringify_list(search_criteria.get('library_selection', None)),
+                              organism=utils.stringify_list(search_criteria.get('organism', None)),
+                              sample_acc=utils.stringify_list(search_criteria.get('sample_acc', None)),
+                              sra_study=utils.stringify_list(search_criteria.get('sra_study', None)),
+                              strain_sam=utils.stringify_list(search_criteria.get('strain_sam', None)))
+            history.save()
         else:
             username = None
+
+        t6 = time()
+        print(f'Built history: {t6 - t5}')
 
         return render(request, 'table.html', {'metadata': page_object,
                                               'in_progress_accs': in_progress_accs,
@@ -610,3 +658,83 @@ def search(request, page=1, order_by='acc', direction='asc'):
 
     else:
         return render(request, 'page_not_found.html')
+
+
+def populate_home_page(request, search_id):
+
+    search_record = History.objects.get(search_id=search_id)
+
+    if not search_record:
+        return render(request, "page_not_found.html")
+
+    form = MetadataForm()
+
+    # Clear the form
+    form.fields['librarylayout'].initial = ''
+    form.fields['sra_study'].initial = ''
+    form.fields['center_name'].initial = ''
+    form.fields['experiment'].initial = ''
+    form.fields['sample_acc'].initial = ''
+    form.fields['biosample'].initial = ''
+    form.fields['organism'].initial = ''
+    form.fields['bioproject'].initial = ''
+    form.fields['geo_loc_name_country_calc'].initial = ''
+    form.fields['geo_loc_name_country_continent_calc'].initial = ''
+
+    # Populate the form
+    if search_record.library_layout is not None:
+        form.fields['librarylayout'].initial = search_record.library_layout.split(',')
+
+    if search_record.sra_study is not None:
+        form.fields['sra_study'].initial = search_record.sra_study.split(',')
+
+    if search_record.center_name is not None:
+        form.fields['center_name'].initial = search_record.center_name.split(',')
+
+    if search_record.experiment_name is not None:
+        form.fields['experiment'].initial = search_record.experiment_name.split(',')
+
+    if search_record.sample_acc is not None:
+        form.fields['sample_acc'].initial = search_record.sample_acc.split(',')
+
+    if search_record.biosample is not None:
+        form.fields['biosample'].initial = search_record.biosample.split(',')
+
+    if search_record.organism is not None:
+        form.fields['organism'].initial = search_record.organism.split(',')
+
+    if search_record.bioproject is not None:
+        form.fields['bioproject'].initial = search_record.bioproject.split(',')
+
+    if search_record.country is not None:
+        form.fields['geo_loc_name_country_calc'].initial = search_record.country.split(',')
+
+    if search_record.continent is not None:
+        form.fields['geo_loc_name_country_continent_calc'].initial = search_record.continent.split(',')
+
+    return render(request, "home.html", {"form": form})
+
+
+@login_required(login_url="login")
+def set_email_notification(request):
+    if request.method == "PUT":
+        # Get the form data
+        data = json.loads(request.body)
+        receive_email = data.get("receiveEmail", None)
+        if receive_email is None:
+            return JsonResponse({"success": False, "message": "Invalid request!"})
+
+        user = User.objects.get(username=request.user.username)
+        user.email_notification = receive_email
+        user.save()
+
+        # Update the status table
+        Status.objects.filter(user_id=user.username).update(email_notification=receive_email)
+
+        if receive_email:
+            return JsonResponse({"success": True, "message": "You will receive email notifications."})
+        else:
+            return JsonResponse({"success": True, "message": "You will no longer receive email notifications."})
+
+    else:
+        return JsonResponse({"success": False, "message": "Invalid request!"})

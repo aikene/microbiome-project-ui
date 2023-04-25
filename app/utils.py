@@ -8,3 +8,14 @@ def validate_password(password):
         return False, f'Your password cannot be entirely numeric.'
 
     return True, 'Your password has been updated successfully.'
+
+
+def stringify_list(lst):
+    if lst is None:
+        return None
+
+    return ','.join(lst)
+
+
+def convert_str_to_list(str):
+    return str.split(',')
