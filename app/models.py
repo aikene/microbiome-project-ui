@@ -5,6 +5,7 @@ from awscicd import settings
 
 
 class User(AbstractUser):
+    email_notification = models.BooleanField(default=True)
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
