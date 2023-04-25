@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Delete Account
+{% endblock %}
+
+{% block body %}
+    <div id="delete-account-view" class="form-content my-3 p-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="card shadow-lg border-0 rounded-lg mt-0 mb-3" style="width: 32rem;">
+                        <div class="card-header justify-content-center">
+                          <h3 class="font-weight-light my-4 text-center">Delete Account</h3>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form action="{% url 'delete_account' username=username %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="col-md-10 offset-md-1">
+                                        <div class="form-group text-center">
+                                            <p>Once you delete your account, there is no going back.</p>
+                                            <div class="alert alert-danger text-center card shadow-lg border-0 rounded-lg mt-0 mb-3">
+                                                 Are you sure you want to delete your account?
+                                            </div>
+
+                                            <div class="delete-account-btns">
+                                                <input type="submit" class="btn btn-danger" value="Yes, I'm sure">
+                                                <a href="{% url 'profile' username %}" class="btn btn-secondary" data-id="cancel"> No, take me back </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,197 @@
+.account-main {
+  font: 400 16px/1.5 Proxima Nova,proxima-nova,Helvetica Neue,Helvetica,Arial,sans-serif;
+  color: #555;
+}
+
+.account-section {
+  display: none;
+  padding: 20px 0 0;
+  border-top: 1px solid #ddd;
+}
+
+.account-input {
+  display: none;
+}
+
+.account-label {
+  display: inline-block;
+  margin: 0 0 -1px;
+  padding: 15px 25px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: #bbb;
+  border: 1px solid transparent;
+}
+
+.account-label:before {
+  /*font-family: fontawesome;*/
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+.account-label:hover {
+  color: #888;
+  cursor: pointer;
+}
+
+.account-input:checked + .account-label {
+  color: #555;
+  border: 1px solid #ddd;
+  border-top: 2px solid orange;
+  border-bottom: 1px solid #fff;
+}
+
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2 {
+  display: block;
+}
+
+@media screen and (max-width: 650px) {
+  .account-label {
+    font-size: 0;
+  }
+
+  .account-label:before {
+    margin: 0;
+    font-size: 18px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .account-label {
+    padding: 15px;
+  }
+}
+
+.text-input {
+  min-width: 300px;
+  font-size:16px;
+}
+
+.account-profile-item {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.5;
+  font-size: 1.125rem;
+}
+
+.account-profile-item-header {
+  flex: 0 1 calc(100% - 120px);
+  display: block;
+  max-width: 25%;
+  font-weight: 600;
+}
+
+div[class^='display-mode'] {
+  flex: 0 0 100%;
+  display: block;
+  max-width: 50%;
+}
+
+.account-profile-item-edit-link {
+  flex: 0 0 100%;
+  display: flex;
+  max-width: 25%;
+  justify-content: flex-end;
+}
+
+.account-profile-form-input {
+  height: 30px;
+}
+
+div[class^='edit-mode'] {
+  flex: 0 0 100%;
+  display: block;
+  max-width: 50%;
+}
+
+a[class^='cancel-link']{
+  font-size: 0.9rem;
+}
+
+.account-profile-form-btns {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.account-profile-form-btns > * {
+  margin-top: 10px;
+}
+
+.delete-account-btn {
+  display: flex;
+  justify-content: center;
+}
+
+.delete-account-btn > a {
+  margin-top: 2rem;
+  width: 24rem;
+}
+
+.delete-account-btns {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-account-btns > * {
+  width: 10rem;
+}
+
+hr {
+  border: 1px solid #ddd;
+}
+
+.page-msg {
+  text-align: center;
+}
+
+.hidden-msg {
+  display: none;
+}
+
+.password-label {
+  font-size: 16px;
+  display: inline-block;
+  width: 200px;
+}
+
+.password-req-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.password-req-list > * {
+  font-size: 16px;
+  display: list-item;
+}
+
+.pagination-btns {
+  display: flex;
+  justify-content: center;
+}
+
+/* ==================== Table */
+table {
+  /*font: 400 16px/1.5 Proxima Nova,proxima-nova,Helvetica Neue,Helvetica,Arial,sans-serif;*/
+  color: #555;
+  width: 100%;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+thead {
+  font-weight: 200;
+}
+
+tr {
+  height: 40px;
+  border-bottom: 1px solid rgba(221, 221, 221, .5);
+  border-collapse: collapse;
+}
+/* ==================== End Table */

@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from awscicd import settings
 
 
-# Create your models here.
 class User(AbstractUser):
 
     def get_full_name(self):
@@ -93,10 +92,11 @@ class Status(models.Model):
 
 
 class Results(models.Model):
+    result_id = models.AutoField(primary_key=True)
     acc = models.CharField(max_length=255)
-    taxon = models.TextField(blank=True, null=True)
+    taxon = models.CharField(max_length=1024, blank=True, null=True)
     confidence = models.FloatField(blank=True, null=True)
-    abundance = models.BigIntegerField(blank=True, null=True)
+    abundance = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
