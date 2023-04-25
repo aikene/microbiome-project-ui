@@ -6,9 +6,35 @@ Search | {{ username }}
 {% endblock %}
 
 {% block body %}
-    <div class="px-2">
-         <p>Total number of records: {{ num_records }}</p>
+   <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Selected Acc(s) for visualization</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            {%  for single_acc in selected_visual %}
+                <li>{{ single_acc }}</li>
+            {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetRunIdForVisual()">Reset</button>
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8 px-2">
+        <p><b>Total number of records:</b> {{ num_records }} <b>Selected for Visualization:</b> <a href="#" id="runIdForVisual" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ selected_visual_records }}</a></p>
+   </div>
+   <div class="col-md-4 px-2">
+        <a href="/" class="float-right pr-3">Back</a>
+   </div>
+  </div>
+
     <div >
         {% if metadata %}
             <table class="table table-sm table-hover">
@@ -123,9 +149,17 @@ Search | {{ username }}
 
                             {% comment %} Checkbox {% endcomment %}
                             {% if single_metadata.acc in completed_accs %}
-                                <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
+                                {% if single_metadata.acc in selected_visual %}
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked></td>
+                                {% else %}
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
+                                {% endif %}
                             {% else %}
-                                <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" disabled></td>
+                                {% if single_metadata.acc in selected_visual %}
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked></td>
+                                {% else %}
+                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
+                                {% endif %}
                             {% endif %}
 
                             {% comment %} Add button {% endcomment %}
@@ -143,8 +177,8 @@ Search | {{ username }}
                 </tbody>
             </table>
 
-
-            <div class="pagination-btns">
+            <div class="row">
+            <div class="pagination-btns col-md-6">
                 <ul class="pagination pagination-sm pagination-circle">
                     {% if metadata.has_previous %}
                         <li class="page-item">
@@ -209,8 +243,16 @@ Search | {{ username }}
                     </li>
                 {% endif%}
                 </ul>
+                </div>
+                <div class="col-md-6">
+                    {% if selected_visual_records > 0 %}
+                        <button class="btn btn-primary float-right" id="btnGenerateVisual">Generate Visualization</button>
+                    {% else %}
+                        <button class="btn btn-primary float-right" id="btnGenerateVisual" disabled>Generate Visualization</button>
+                    {% endif%}
+                </div>
             </div>
-
+            
         {% else %}
             <div class="container my-3 p-3">
                 <div class="row justify-content-center">
@@ -223,8 +265,66 @@ Search | {{ username }}
             </div>
         {% endif %}
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
+
+        $(document).ready(function() {
+            $("#btnGenerateVisual").click(function(){
+                window.location = "/generate_visualization" ;
+            });
+
+            $("input[type=checkbox]").change(function() {
+                if(this.checked) {
+                    //console.log('add value:'+$(this).val());
+                    updateRunIdForVisual($(this).val(),1);
+                }
+                else{
+                    //console.log('remove value:'+$(this).val());
+                    updateRunIdForVisual($(this).val(),0);
+                }       
+            });
+        });
+
+        function resetRunIdForVisual(){
+            var result = confirm("Are you sure you want to reset selected acc for visualization?");
+            if (result){
+                $.get( "/api/visualization/reset", function( data ) {
+                console.log(data);
+                //update selected runId for visual counter
+                $("#runIdForVisual").html(data.length);
+                $("#btnGenerateVisual").attr('disabled','disabled');
+                $(".modal-body").html("");
+                $('input:checkbox').each(function(){
+                    this.checked=false;
+                })
+                //update popup detail
+                $.each(data, function(key, value) {
+                    $(".modal-body").append('<li>' + value + '</li>');
+                });
+                }, "json" );
+            }
+           
+        }
+
+        function updateRunIdForVisual(runId,add){
+            $.get( "/api/visualization/"+add.toString()+"/"+runId, function( data ) {
+                console.log(data);
+                //update selected runId for visual counter
+                $("#runIdForVisual").html(data.length);
+                $(".modal-body").html("");
+                if (data.length>0){
+                    $("#btnGenerateVisual").removeAttr('disabled');
+                }
+                else {
+                    $("#btnGenerateVisual").attr('disabled','disabled');
+                }
+                //update popup detail
+                $.each(data, function(key, value) {
+                    $(".modal-body").append('<li>' + value + '</li>');
+                });
+                }, "json" );
+        }
+
         function callDataCollectionAPI(runId){
             //call data collection API to process the run Id
             $.ajax("http://44.232.220.91:8000", {
