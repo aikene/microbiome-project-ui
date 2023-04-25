@@ -111,6 +111,7 @@ class History(models.Model):
         db_table = 'history'
 
 
+
 class Metadata(models.Model):
     acc = models.TextField(primary_key=True)
     assay_type = models.TextField(blank=True, null=True)
@@ -156,7 +157,6 @@ class Metadata(models.Model):
     class Meta:
         managed = False
         db_table = 'metadata'
-
 
 class PostProcessorStudy(models.Model):
     id = models.TextField(primary_key=True)

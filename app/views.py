@@ -49,7 +49,7 @@ class TokenGenerator(PasswordResetTokenGenerator):
 
 
 account_activation_token = TokenGenerator()
-
+session_key_visual = 'update_runId_for_visual'
 
 
 def home(request):
@@ -110,6 +110,22 @@ def featuretable(request):
 
 #     # render the HTML template with the context dictionary
 #     return render(request, '/visualization/index.html', context)
+
+# API end point to reset selected run ID for visualization (api/visualization/reset)
+def reset_runId_for_visual(request):
+    utils.clear_session_list(request, session_key_visual)
+    json_data = json.dumps(request.session.get(session_key_visual, []))
+    return HttpResponse(json_data, content_type='application/json')
+
+# API end point to update selected run ID for visualization (api/visualization/{add}/{runId})
+def update_runId_for_visual(request, runId, add = 1):
+    if isinstance(add, int) and isinstance(runId, str):
+        
+        utils.update_session_list(request,session_key_visual,runId,add)
+
+    json_data = json.dumps(request.session.get(session_key_visual, []))
+    return HttpResponse(json_data, content_type='application/json')
+
 
 # API end point to get run status by run ID (/api/check_run_status/{runId})
 def check_run_status(request, runId):
@@ -236,19 +252,26 @@ def taxonomic_bar_plots(request, uuid):
 
 
 def generate_visualization(request):
-    if request.method == 'POST':
-        # define the pattern for the checkbox names
-        pattern = 'chk_'
+    runIds = ""
+    # load selected runIds from session
+    sel_runIds_visual = request.session.get(session_key_visual, [])
+    if len(sel_runIds_visual) >0:
+        for runId in sel_runIds_visual:
+            runIds += " " +runId
+    
+    # if request.method == 'POST':
+    #     # define the pattern for the checkbox names
+    #     pattern = 'chk_'
 
-        runIds = ""
-        # loop through the request.POST dictionary to find the names of the checkboxes
-        for name, value in request.POST.items():
-            if name.startswith(pattern):
-                # do something if the checkbox is checked
-                runIds = runIds + " " + value
-    else:
-        # temporarily add runIds
-        runIds = "ERR6004724 ERR6004803 ERR6004727 ERR6004692"
+    #     runIds = ""
+    #     # loop through the request.POST dictionary to find the names of the checkboxes
+    #     for name, value in request.POST.items():
+    #         if name.startswith(pattern):
+    #             # do something if the checkbox is checked
+    #             runIds = runIds + " " + value
+    # else:
+    #     # temporarily add runIds
+    #     runIds = "ERR6004724 ERR6004803 ERR6004727 ERR6004692"
 
     return render(request, "visualization.html", {"runIds": runIds.strip()})
 
@@ -584,6 +607,7 @@ def search(request, page=1, order_by='acc', direction='asc'):
             history.save()
         else:
             username = None
+        sel_runIds_visual = request.session.get(session_key_visual, [])
 
         t6 = time()
         print(f'Built history: {t6 - t5}')
@@ -596,6 +620,8 @@ def search(request, page=1, order_by='acc', direction='asc'):
                                               'order_by': order_by,
                                               'direction': direction,
                                               'num_records': num_records,
+                                              'selected_visual': sel_runIds_visual,
+                                              'selected_visual_records': len(sel_runIds_visual),
                                               'search_criteria': json.dumps(search_criteria)})
     elif request.method == 'GET':
 
@@ -639,6 +665,8 @@ def search(request, page=1, order_by='acc', direction='asc'):
         else:
             username = None
 
+        sel_runIds_visual = request.session.get(session_key_visual, [])
+
         return render(request, 'table.html', {'metadata': page_object,
                                               'in_progress_accs': in_progress_accs,
                                               'completed_accs': completed_accs,
@@ -647,6 +675,8 @@ def search(request, page=1, order_by='acc', direction='asc'):
                                               'order_by': order_by,
                                               'direction': direction,
                                               'num_records': num_records,
+                                              'selected_visual': sel_runIds_visual,
+                                              'selected_visual_records' : len(sel_runIds_visual),
                                               'search_criteria': json.dumps(search_criteria)})
 
 
