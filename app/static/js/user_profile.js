@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("tab2").checked = true;
     }
 
+    document.getElementById("email-notification-checkbox").addEventListener('change', function() {
+        setEmailNotification(this.checked);
+    })
+
     // Hide all edit forms and add event listener to all edit forms
     document.querySelectorAll("[class^='edit-form']").forEach(form => {
         // Initially hide the edit form
@@ -88,6 +92,45 @@ function editProfile(dataID, newContent) {
 
             // Hide the edit form and show the content itself
             switchToEditView(false, contentDiv);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+    // Prevent the form from submitting
+    return false;
+}
+
+function setEmailNotification(receiveEmail) {
+    /**
+     * Sends a PUT request to update the email notification preference.
+     */
+    // Get the CSRF token
+    const token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    // Send put request to change the password
+    fetch(`/set_email_notification/`, {
+        method: 'PUT',
+        body: JSON.stringify({receiveEmail: receiveEmail}),
+        headers: {"X-CSRFToken": token}
+    }).then(response => response.json())
+        .then(result => {
+            // Get the relevant div
+            const msgDiv = document.querySelector(`.page-msg`);
+
+            // Update the content
+            if (result.success) {
+                msgDiv.classList.remove('alert-danger')
+                msgDiv.classList.add('alert-success');
+            } else {
+                msgDiv.classList.remove('alert-success')
+                msgDiv.classList.add('alert-danger');
+            }
+
+            const msg = result.message;
+            msgDiv.innerHTML = `${msg}`;
+            msgDiv.classList.remove('hidden-msg');
+
         })
         .catch(error => {
             console.log(error);
