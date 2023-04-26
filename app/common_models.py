@@ -27,6 +27,7 @@ class Distinct_Library_Selection(models.Model):
         managed = False
         db_table = 'library_selection_view'
 
+
 class Distinct_SRA(models.Model):
     sra_study = models.CharField(max_length=255, primary_key=True)
     count = models.IntegerField()
@@ -34,6 +35,7 @@ class Distinct_SRA(models.Model):
     class Meta:
         managed = False
         db_table = 'sra_view'
+
 
 class Center_Name(models.Model):
     center_name = models.CharField(max_length=255, primary_key=True)
@@ -43,6 +45,7 @@ class Center_Name(models.Model):
         managed = False
         db_table = 'center_name_view'
 
+
 class Distinct_Assay_Type(models.Model):
     sra_study = models.CharField(max_length=255, primary_key=True)
     count = models.IntegerField()
@@ -50,6 +53,7 @@ class Distinct_Assay_Type(models.Model):
     class Meta:
         managed = False
         db_table = 'sra_view'
+
 
 class Experiment_Name(models.Model):
     experiment = models.CharField(max_length=255, primary_key=True)
@@ -112,3 +116,48 @@ class Continent(models.Model):
     class Meta:
         managed = False
         db_table = 'continent_view'
+
+
+class BreedSample(models.Model):
+    breed_sam = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'breed_sam_view'
+
+
+class CultivarSample(models.Model):
+    cultivar_sam = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'cultivar_sam_view'
+
+
+class EcotypeSample(models.Model):
+    ecotype_sam = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'ecotype_sam_view'
+
+
+class IsolateSample(models.Model):
+    iosolate_sam = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'iosolate_sam_view'
+
+
+class StrainSample(models.Model):
+    strain_sam = models.CharField(max_length=255, primary_key=True)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'strain_sam_view'
