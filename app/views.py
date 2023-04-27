@@ -6,6 +6,7 @@ from datetime import datetime
 from zipfile import ZipFile
 from time import time
 
+
 import boto3
 import psycopg2
 from django.conf import settings
@@ -58,7 +59,11 @@ def home(request):
         if form.is_valid():
             return redirect("table")
     else:
-        form = MetadataForm()
+        if (request.session.get('save_form', None) != None):
+            saved_form = json.loads(request.session.get('save_form', None))
+            form = MetadataForm(initial= saved_form )
+        else:
+            form = MetadataForm()
     return render(request, "home.html", {"form": form})
 
 
@@ -143,12 +148,14 @@ def check_run_status(request, runId):
 
     if not row:
         if request.user.is_authenticated:
-            cur.execute(f"""INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at, email_notification) 
-                                                VALUES ('{runId}', '{request.user.id}', '{request.user.email}', '1', 0, 
-                                                NOW(), NOW(), {request.user.email_notification})""")
+            cur.execute("INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at) \
+             VALUES (%s, %s, %s, %s, %s, NOW(), NOW())",
+            (runId, request.user.id, request.user.email, '1', 0,))
+           
         else:
-            cur.execute(f"""INSERT INTO status (acc, public, status, created_at, updated_at, email_notification) 
-            VALUES ('{runId}', '1', 0, NOW(), NOW(), FALSE)""")
+            cur.execute("INSERT INTO status (acc, public, status, created_at, updated_at) \
+                                        VALUES (%s, %s, %s, NOW(), NOW())",
+                    (runId,'1',0,))
 
         conn.commit()
         cur.execute("SELECT * FROM status where acc = %s", (runId,))
@@ -190,66 +197,72 @@ def move_data_folder(output_dir, folder_name):
 
 
 def feature_table_summary(request, uuid):
+    try:
     # uuid = request.GET.get('uuid', None)
-    if uuid is not None and "demo" not in uuid:
-        # Option 1) use shell command to copy files from s3 bucket to /app/static/visualization/
-        # shutil.copytree('/home/qiime2/qiime2storage/merged_results/'+uuid+'/feature_table/','app/static/visualization/'+uuid+'/feature_table/')
+        if uuid is not None and "demo" not in uuid:
+            # Option 1) use shell command to copy files from s3 bucket to /app/static/visualization/
+            # shutil.copytree('/home/qiime2/qiime2storage/merged_results/'+uuid+'/feature_table/','app/static/visualization/'+uuid+'/feature_table/')
 
-        # Option 2) use boto3 to download files from s3 bucket
-        # create an S3 client
-        s3 = boto3.client('s3')
+            # Option 2) use boto3 to download files from s3 bucket
+            # create an S3 client
+            s3 = boto3.client('s3')
 
-        # specify the S3 bucket and file names
-        bucket_name = 'qiime2storage'
-        qzv_file = 'merged_results/' + uuid + '/merged_feature_tables.qzv'
+            # specify the S3 bucket and file names
+            bucket_name = 'qiime2storage'
+            qzv_file = 'merged_results/' + uuid + '/merged_feature_tables.qzv'
 
-        # download the files from S3 and store them temporarily on the server
-        target_folder = os.path.join(settings.BASE_DIR, 'app', 'static', 'visualization', uuid)
-        if not os.path.exists(target_folder):
-            os.makedirs(target_folder)
-        s3.download_file(bucket_name, qzv_file, target_folder + "/merged_feature_tables.qzv")
-        # unzip qzv file
-        unzip(target_folder + "/merged_feature_tables.qzv", target_folder)
+            # download the files from S3 and store them temporarily on the server
+            target_folder = os.path.join(settings.BASE_DIR, 'app', 'static', 'visualization', uuid)
+            if not os.path.exists(target_folder):
+                os.makedirs(target_folder)
+            s3.download_file(bucket_name, qzv_file, target_folder + "/merged_feature_tables.qzv")
+        
+            # unzip qzv file
+            unzip(target_folder + "/merged_feature_tables.qzv", target_folder)
 
-        # re-organize the folder
-        move_data_folder(target_folder, 'feature_table')
+            # re-organize the folder
+            move_data_folder(target_folder, 'feature_table')
 
-        return render(request, "feature_table_summary.html", {"chart_type": "live", "uuid": uuid})
-    else:
-        # show demo chart
+            return render(request, "feature_table_summary.html", {"chart_type": "live", "uuid": uuid})
+        else:
+            # show demo chart
+            return render(request, "feature_table_summary.html", {"chart_type": "demo", "uuid": "demo"})
+    except:
         return render(request, "feature_table_summary.html", {"chart_type": "demo", "uuid": "demo"})
 
-
 def taxonomic_bar_plots(request, uuid):
+    try:
     # uuid = request.GET.get('uuid', None)
-    if uuid is not None and "demo" not in uuid:
-        # Option 1) use shell command to copy files from s3 bucket to /app/static/visualization/
-        # shutil.copytree('/home/qiime2/qiime2storage/merged_results/'+uuid+'/taxonomy_results/','app/static/visualization/'+uuid+'/taxonomy_results/')
+        if uuid is not None and "demo" not in uuid:
+            # Option 1) use shell command to copy files from s3 bucket to /app/static/visualization/
+            # shutil.copytree('/home/qiime2/qiime2storage/merged_results/'+uuid+'/taxonomy_results/','app/static/visualization/'+uuid+'/taxonomy_results/')
 
-        # Option 2) use boto3 to download files from s3 bucket
-        # create an S3 client
-        s3 = boto3.client('s3')
+            # Option 2) use boto3 to download files from s3 bucket
+            # create an S3 client
+            s3 = boto3.client('s3')
 
-        # specify the S3 bucket and file names
-        bucket_name = 'qiime2storage'
-        qzv_file = 'merged_results/' + uuid + '/taxonomy_bar_plot.qzv'
+            # specify the S3 bucket and file names
+            bucket_name = 'qiime2storage'
+            qzv_file = 'merged_results/' + uuid + '/taxonomy_bar_plot.qzv'
 
-        # download the files from S3 and store them temporarily on the server
-        target_folder = os.path.join(settings.BASE_DIR, 'app', 'static', 'visualization', uuid)
-        if not os.path.exists(target_folder):
-            os.makedirs(target_folder)
-        s3.download_file(bucket_name, qzv_file, target_folder + "/taxonomy_bar_plot.qzv")
-        # unzip qzv file
-        unzip(target_folder + "/taxonomy_bar_plot.qzv", target_folder)
+            # download the files from S3 and store them temporarily on the server
+            target_folder = os.path.join(settings.BASE_DIR, 'app', 'static', 'visualization', uuid)
+            if not os.path.exists(target_folder):
+                os.makedirs(target_folder)
+            s3.download_file(bucket_name, qzv_file, target_folder + "/taxonomy_bar_plot.qzv")
 
-        # re-organize the folder
-        move_data_folder(target_folder, 'taxonomy_results')
+            # unzip qzv file
+            unzip(target_folder + "/taxonomy_bar_plot.qzv", target_folder)
 
-        return render(request, "taxonomic_bar_plots.html", {"chart_type": "live", "uuid": uuid})
-    else:
-        # show demo chart
+            # re-organize the folder
+            move_data_folder(target_folder, 'taxonomy_results')
+
+            return render(request, "taxonomic_bar_plots.html", {"chart_type": "live", "uuid": uuid})
+        else:
+            # show demo chart
+            return render(request, "taxonomic_bar_plots.html", {"chart_type": "demo", "uuid": "demo"})
+    except:
         return render(request, "taxonomic_bar_plots.html", {"chart_type": "demo", "uuid": "demo"})
-
 
 def generate_visualization(request):
     runIds = ""
@@ -275,6 +288,49 @@ def generate_visualization(request):
 
     return render(request, "visualization.html", {"runIds": runIds.strip()})
 
+
+#download result csv file from the S3 bucket
+def download_results_csv(request,uuid):
+    try:
+    # uuid = request.GET.get('uuid', None)
+        if uuid is not None and "demo" not in uuid:
+            # Option 1) use shell command to copy files from s3 bucket to /app/static/visualization/
+            # shutil.copytree('/home/qiime2/qiime2storage/merged_results/'+uuid+'/taxonomy_results/','app/static/visualization/'+uuid+'/taxonomy_results/')
+
+            # Option 2) use boto3 to download files from s3 bucket
+            # create an S3 client
+            s3 = boto3.client('s3')
+
+            # specify the S3 bucket and file names
+            bucket_name = 'qiime2storage'
+         
+            csv_file = 'merged_results/' + uuid + '/results.csv'
+
+            # download the files from S3 and store them temporarily on the server
+            target_folder = os.path.join(settings.BASE_DIR, 'app', 'static', 'visualization', uuid)
+            if not os.path.exists(target_folder):
+                os.makedirs(target_folder)
+           
+            s3.download_file(bucket_name, csv_file, target_folder + "/results.csv")
+
+            if not os.path.exists(target_folder + "/results.csv"):
+                return HttpResponse("The file does not exist.", status=404)
+            
+            # Open the file and read the CSV data
+            with open(target_folder + "/results.csv", 'r') as f:
+                csv_data = f.read()
+            
+            # Create the HttpResponse object with the CSV data
+            response = HttpResponse(csv_data, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="results.csv"'
+            
+            return response
+
+            
+        else:
+            return HttpResponse("The file does not exist.", status=404)
+    except:
+        return HttpResponse("The file does not exist.", status=404)
 
 def login_view(request):
     if request.method == "POST":
@@ -536,10 +592,12 @@ def search(request, page=1, order_by='acc', direction='asc'):
         for metadata_field in metadata_fields:
             t_init = time()
             filter_values = request.POST.getlist(metadata_field)
-
+            
             if not filter_values:
                 continue
 
+
+           
             search_criteria[metadata_field] = filter_values
             query = build_query(filter_values=filter_values, field=metadata_field)
 
@@ -550,6 +608,9 @@ def search(request, page=1, order_by='acc', direction='asc'):
 
             t_finish = time()
             print(f'Built {metadata_field}: {t_finish - t_init}')
+
+        clean_form = json.dumps(search_criteria,default=str)
+        request.session['save_form'] = clean_form
 
         t1 = time()
         print(f'Built Query sets: {t1 - t0}')
