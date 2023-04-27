@@ -17,6 +17,7 @@ urlpatterns = [
     path("profile/<str:username>/<int:page>/<int:show_history>/", views.user_profile, name="profile"),
     path("editprofile/<str:field>", views.edit_profile, name="edit_profile"),
     path("generate_visualization/", views.generate_visualization, name="generate_visualization"),
+    path("download_results_csv/<str:uuid>",views.download_results_csv, name="download_results_csv"),
     path("feature_table_summary/<str:uuid>", views.feature_table_summary, name="feature_table_summary"),
     path("taxonomic_bar_plots/<str:uuid>", views.taxonomic_bar_plots, name="taxonomic_bar_plots"),
     path("demo_table_view/", views.demo_table_view, name="demo_table_view"),
