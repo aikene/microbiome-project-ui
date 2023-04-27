@@ -37,7 +37,7 @@ Search | {{ username }}
 
     <div >
         {% if metadata %}
-            <table class="table table-sm table-hover">
+            <table class="table table-sm table-hover table-generic">
                 <thead>
                     <tr>
                         {% if order_by == 'acc' and direction == 'asc'%}
@@ -231,7 +231,7 @@ Search | {{ username }}
                         <a class="page-link" href="{% url 'table' page=metadata.paginator.num_pages order_by=order_by direction=direction %}?search_criteria={{ search_criteria }}">Last</a>
                     </li>
                 {% else %}
-                    <li class="page-item">
+                    <li class="page-item disabled">
                         <a class="page-link" aria-label="Next" href="#" tabindex="-1">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>

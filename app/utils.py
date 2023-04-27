@@ -10,6 +10,18 @@ def validate_password(password):
     return True, 'Your password has been updated successfully.'
 
 
+
+def stringify_list(lst):
+    if lst is None:
+        return None
+
+    return ','.join(lst)
+
+
+def convert_str_to_list(str):
+    return str.split(',')
+
+
 def update_session_list(request,key, runId, add=1):
     # Get the session variable
     session_list = request.session.get(key, [])
