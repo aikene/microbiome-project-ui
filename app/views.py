@@ -6,6 +6,7 @@ from datetime import datetime
 from zipfile import ZipFile
 from time import time
 
+
 import boto3
 import psycopg2
 from django.conf import settings
@@ -58,7 +59,11 @@ def home(request):
         if form.is_valid():
             return redirect("table")
     else:
-        form = MetadataForm()
+        if (request.session.get('save_form', None) != None):
+            saved_form = json.loads(request.session.get('save_form', None))
+            form = MetadataForm(initial= saved_form )
+        else:
+            form = MetadataForm()
     return render(request, "home.html", {"form": form})
 
 
@@ -587,10 +592,12 @@ def search(request, page=1, order_by='acc', direction='asc'):
         for metadata_field in metadata_fields:
             t_init = time()
             filter_values = request.POST.getlist(metadata_field)
-
+            
             if not filter_values:
                 continue
 
+
+           
             search_criteria[metadata_field] = filter_values
             query = build_query(filter_values=filter_values, field=metadata_field)
 
@@ -601,6 +608,9 @@ def search(request, page=1, order_by='acc', direction='asc'):
 
             t_finish = time()
             print(f'Built {metadata_field}: {t_finish - t_init}')
+
+        clean_form = json.dumps(search_criteria,default=str)
+        request.session['save_form'] = clean_form
 
         t1 = time()
         print(f'Built Query sets: {t1 - t0}')
