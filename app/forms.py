@@ -146,8 +146,8 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Distinct_Library_Layout.objects.all(),
         widget=LibraryLayoutWidget(attrs={'data-placeholder': '"Single" and "Paired" are only options',
-                                     "data-minimum-input-length": 0}),
-        initial=Distinct_Library_Layout.objects.all(),
+                                          "data-minimum-input-length": 0}),
+        initial=['PAIRED'],
     )
     sra_study = s2forms.forms.ModelMultipleChoiceField(
         label='SRA Study',
@@ -155,14 +155,14 @@ class MetadataForm(forms.ModelForm):
         queryset=Distinct_SRA.objects.all(),
         widget=SRAStudyWidget(attrs={'data-placeholder': 'SRA Studies typically start with "SRP" or "ERP"',
                                      "data-minimum-input-length": 0}),
-        initial=Distinct_SRA.objects.all()[:10],
+        initial=['SRP215023', 'SRP124269', 'SRP033608', 'ERP107334', 'ERP022351', 'ERP010484'],
     )
     center_name = forms.ModelMultipleChoiceField(
         label='Center Name',
         required=False,
         queryset=Center_Name.objects.all(),
         widget=CenterNameSelectionWidget(attrs={'data-placeholder': 'Example Center Name is "MIT"',
-                                     "data-minimum-input-length": 0}),
+                                                "data-minimum-input-length": 0}),
         initial='UNIVERSITY OF CALIFORNIA SAN DIEGO MICROBIOME INIT'
     )
     experiment = forms.ModelMultipleChoiceField(
@@ -170,7 +170,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Experiment_Name.objects.all(),
         widget=ExperimentSelectionWidget(attrs={'data-placeholder': 'Experiments start with "SRX" or "ERX"',
-                                     "data-minimum-input-length": 0}),
+                                                "data-minimum-input-length": 0}),
         initial='SRX2986493'
     )
     sample_acc = forms.ModelMultipleChoiceField(
@@ -178,7 +178,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Sample_Acc.objects.all(),
         widget=SampleAccSelectionWidget(attrs={'data-placeholder': 'Acc start with "SRS" or "ERS"',
-                                     "data-minimum-input-length": 0}),
+                                               "data-minimum-input-length": 0}),
         initial='SRS8610790'
     )
     biosample = forms.ModelMultipleChoiceField(
@@ -186,7 +186,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Biosample.objects.all(),
         widget=BiosampleSelectionWidget(attrs={'data-placeholder': 'Biosample starts with "SAMEA" or "SAMN"',
-                                     "data-minimum-input-length": 0}),
+                                               "data-minimum-input-length": 0}),
         initial='SAMN18350539'
     )
     organism = forms.ModelMultipleChoiceField(
@@ -194,7 +194,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Organism.objects.all(),
         widget=OrganismSelectionWidget(attrs={'data-placeholder': 'Organisms include "oral", "skin", "gut"',
-                                     "data-minimum-input-length": 0}),
+                                              "data-minimum-input-length": 0}),
         initial='metagenome'
     )
     bioproject = forms.ModelMultipleChoiceField(
@@ -202,7 +202,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Bioproject.objects.all(),
         widget=BioprojectSelectionWidget(attrs={'data-placeholder': 'Bioprojects start with "PRJEB", "PRJN"',
-                                     "data-minimum-input-length": 0}),
+                                                "data-minimum-input-length": 0}),
         initial='PRJEB36635'
     )
     geo_loc_name_country_calc = forms.ModelMultipleChoiceField(
@@ -210,7 +210,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Country.objects.all(),
         widget=CountrySelectionWidget(attrs={'data-placeholder': 'Countries...',
-                                     "data-minimum-input-length": 0}),
+                                             "data-minimum-input-length": 0}),
         initial='USA'
     )
     geo_loc_name_country_continent_calc = forms.ModelMultipleChoiceField(
@@ -218,7 +218,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Continent.objects.all(),
         widget=ContinentSelectionWidget(attrs={'data-placeholder': 'Continents...',
-                                     "data-minimum-input-length": 0}),
+                                               "data-minimum-input-length": 0}),
         initial='North America'
     )
     gender = forms.ModelMultipleChoiceField(
@@ -226,7 +226,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Distinct_Sex.objects.all(),
         widget=SexSelectionWidget(attrs={'data-placeholder': 'Sex fields include "male", "female"',
-                                     "data-minimum-input-length": 0}),
+                                         "data-minimum-input-length": 0}),
         initial=['male', 'female']
     )
     breed_sam = forms.ModelMultipleChoiceField(
@@ -242,7 +242,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=CultivarSample.objects.all(),
         widget=CultivarSamWidget(attrs={'data-placeholder': '...',
-                                     "data-minimum-input-length": 0}),
+                                        "data-minimum-input-length": 0}),
         initial='unknown'
     )
     ecotype_sam = forms.ModelMultipleChoiceField(
@@ -250,15 +250,15 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=EcotypeSample.objects.all(),
         widget=EcotypeSamWidget(attrs={'data-placeholder': '...',
-                                     "data-minimum-input-length": 0}),
+                                       "data-minimum-input-length": 0}),
         initial='unknown'
     )
-    isolate_sam = forms.ModelMultipleChoiceField(
+    iosolate_sam = forms.ModelMultipleChoiceField(
         label='Isolate Sample',
         required=False,
         queryset=IsolateSample.objects.all(),
         widget=IsolateSamWidget(attrs={'data-placeholder': 'Isolate fields include "Human", "stool", "oral cavity"',
-                                     "data-minimum-input-length": 0}),
+                                       "data-minimum-input-length": 0}),
         initial='Bacteria'
     )
     libraryselection = forms.ModelMultipleChoiceField(
@@ -267,15 +267,15 @@ class MetadataForm(forms.ModelForm):
         queryset=Distinct_Library_Selection.objects.all(),
         widget=LibrarySelectionWidget(attrs={'data-placeholder': 'Library Selection fields include "PCR",'
                                                                  '"RT-PCR", "cDNA"',
-                                     "data-minimum-input-length": 0}),
-        initial='PCR'
+                                             "data-minimum-input-length": 0}),
+        initial=['PCR', 'RANDOM']
     )
     strain_sam = forms.ModelMultipleChoiceField(
         label='Strain Sample',
         required=False,
         queryset=StrainSample.objects.all(),
         widget=StrainSelectionWidget(attrs={'data-placeholder': '...',
-                                     "data-minimum-input-length": 0}),
+                                            "data-minimum-input-length": 0}),
         initial='complex microbiome'
     )
 
@@ -283,4 +283,5 @@ class MetadataForm(forms.ModelForm):
         model = models.Metadata
         fields = ('librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
                   'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc',
-                  'gender', 'breed_sam', 'cultivar_sam', 'ecotype_sam', 'isolate_sam', 'libraryselection', 'strain_sam')
+                  'gender', 'breed_sam', 'cultivar_sam', 'ecotype_sam', 'iosolate_sam', 'libraryselection',
+                  'strain_sam')
