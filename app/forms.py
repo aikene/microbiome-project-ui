@@ -194,21 +194,21 @@ class MetadataForm(forms.ModelForm):
         label='Bio Project',
         required=False,
         queryset=Bioproject.objects.all(),
-        widget=BioprojectSelectionWidget(attrs={'data-placeholder': '...start with "PRJEB", "PRJN"',
+        widget=BioprojectSelectionWidget(attrs={'data-placeholder': '...starts with "PRJEB", "PRJN"',
                                                 "data-minimum-input-length": 0}),
     )
     geo_loc_name_country_calc = forms.ModelMultipleChoiceField(
         label='Country',
         required=False,
         queryset=Country.objects.all(),
-        widget=CountrySelectionWidget(attrs={'data-placeholder': '"USA","Japan"',
+        widget=CountrySelectionWidget(attrs={'data-placeholder': '"USA", "Japan"',
                                              "data-minimum-input-length": 0}),
     )
     geo_loc_name_country_continent_calc = forms.ModelMultipleChoiceField(
         label='Continent',
         required=False,
         queryset=Continent.objects.all(),
-        widget=ContinentSelectionWidget(attrs={'data-placeholder': '"North America" "Oceania"',
+        widget=ContinentSelectionWidget(attrs={'data-placeholder': '"North America", "Oceania"',
                                                "data-minimum-input-length": 0}),
     )
     gender = forms.ModelMultipleChoiceField(
@@ -229,14 +229,14 @@ class MetadataForm(forms.ModelForm):
         label='Cultivar Sample',
         required=False,
         queryset=CultivarSample.objects.all(),
-        widget=CultivarSamWidget(attrs={'data-placeholder': '"unknown is the most common option"',
+        widget=CultivarSamWidget(attrs={'data-placeholder': 'unknown is the most common option',
                                         "data-minimum-input-length": 0}),
     )
     ecotype_sam = forms.ModelMultipleChoiceField(
         label='Ecotype Sample',
         required=False,
         queryset=EcotypeSample.objects.all(),
-        widget=EcotypeSamWidget(attrs={'data-placeholder': '"unknown is the most common option"',
+        widget=EcotypeSamWidget(attrs={'data-placeholder': 'unknown is the most common option',
                                        "data-minimum-input-length": 0}),
     )
     iosolate_sam = forms.ModelMultipleChoiceField(
@@ -257,7 +257,7 @@ class MetadataForm(forms.ModelForm):
         label='Strain Sample',
         required=False,
         queryset=StrainSample.objects.all(),
-        widget=StrainSelectionWidget(attrs={'data-placeholder': '"unknown is the most common field"',
+        widget=StrainSelectionWidget(attrs={'data-placeholder': 'unknown is the most common field',
                                             "data-minimum-input-length": 0}),
     )
 
