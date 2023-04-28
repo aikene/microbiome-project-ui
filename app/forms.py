@@ -147,136 +147,118 @@ class MetadataForm(forms.ModelForm):
         queryset=Distinct_Library_Layout.objects.all(),
         widget=LibraryLayoutWidget(attrs={'data-placeholder': '"Single" and "Paired" are only options',
                                           "data-minimum-input-length": 0}),
-        initial=['PAIRED'],
     )
     sra_study = s2forms.forms.ModelMultipleChoiceField(
         label='SRA Study',
         required=False,
         queryset=Distinct_SRA.objects.all(),
-        widget=SRAStudyWidget(attrs={'data-placeholder': 'SRA Studies typically start with "SRP" or "ERP"',
+        widget=SRAStudyWidget(attrs={'data-placeholder': '...starts with "SRP" or "ERP"',
                                      "data-minimum-input-length": 0}),
-        initial=['SRP215023', 'SRP124269', 'SRP033608', 'ERP107334', 'ERP022351', 'ERP010484'],
     )
     center_name = forms.ModelMultipleChoiceField(
         label='Center Name',
         required=False,
         queryset=Center_Name.objects.all(),
-        widget=CenterNameSelectionWidget(attrs={'data-placeholder': 'Example Center Name is "MIT"',
+        widget=CenterNameSelectionWidget(attrs={'data-placeholder': '"Harvard University"',
                                                 "data-minimum-input-length": 0}),
-        initial='UNIVERSITY OF CALIFORNIA SAN DIEGO MICROBIOME INIT'
     )
     experiment = forms.ModelMultipleChoiceField(
         label='Experiment ID',
         required=False,
         queryset=Experiment_Name.objects.all(),
-        widget=ExperimentSelectionWidget(attrs={'data-placeholder': 'Experiments start with "SRX" or "ERX"',
+        widget=ExperimentSelectionWidget(attrs={'data-placeholder': '...starts with "SRX" or "ERX"',
                                                 "data-minimum-input-length": 0}),
-        initial='SRX2986493'
     )
     sample_acc = forms.ModelMultipleChoiceField(
         label='Sample Acc',
         required=False,
         queryset=Sample_Acc.objects.all(),
-        widget=SampleAccSelectionWidget(attrs={'data-placeholder': 'Acc start with "SRS" or "ERS"',
+        widget=SampleAccSelectionWidget(attrs={'data-placeholder': '...starts with "SRS" or "ERS"',
                                                "data-minimum-input-length": 0}),
-        initial='SRS8610790'
     )
     biosample = forms.ModelMultipleChoiceField(
         label='Bio Sample',
         required=False,
         queryset=Biosample.objects.all(),
-        widget=BiosampleSelectionWidget(attrs={'data-placeholder': 'Biosample starts with "SAMEA" or "SAMN"',
+        widget=BiosampleSelectionWidget(attrs={'data-placeholder': '... starts with "SAMEA" or "SAMN"',
                                                "data-minimum-input-length": 0}),
-        initial='SAMN18350539'
     )
     organism = forms.ModelMultipleChoiceField(
         label='Organism',
         required=False,
         queryset=Organism.objects.all(),
-        widget=OrganismSelectionWidget(attrs={'data-placeholder': 'Organisms include "oral", "skin", "gut"',
+        widget=OrganismSelectionWidget(attrs={'data-placeholder': '"oral", "skin", "gut"',
                                               "data-minimum-input-length": 0}),
-        initial='metagenome'
     )
     bioproject = forms.ModelMultipleChoiceField(
         label='Bio Project',
         required=False,
         queryset=Bioproject.objects.all(),
-        widget=BioprojectSelectionWidget(attrs={'data-placeholder': 'Bioprojects start with "PRJEB", "PRJN"',
+        widget=BioprojectSelectionWidget(attrs={'data-placeholder': '...start with "PRJEB", "PRJN"',
                                                 "data-minimum-input-length": 0}),
-        initial='PRJEB36635'
     )
     geo_loc_name_country_calc = forms.ModelMultipleChoiceField(
         label='Country',
         required=False,
         queryset=Country.objects.all(),
-        widget=CountrySelectionWidget(attrs={'data-placeholder': 'Countries...',
+        widget=CountrySelectionWidget(attrs={'data-placeholder': '"USA","Japan"',
                                              "data-minimum-input-length": 0}),
-        initial='USA'
     )
     geo_loc_name_country_continent_calc = forms.ModelMultipleChoiceField(
         label='Continent',
         required=False,
         queryset=Continent.objects.all(),
-        widget=ContinentSelectionWidget(attrs={'data-placeholder': 'Continents...',
+        widget=ContinentSelectionWidget(attrs={'data-placeholder': '"North America" "Oceania"',
                                                "data-minimum-input-length": 0}),
-        initial='North America'
     )
     gender = forms.ModelMultipleChoiceField(
         label='Sex',
         required=False,
         queryset=Distinct_Sex.objects.all(),
-        widget=SexSelectionWidget(attrs={'data-placeholder': 'Sex fields include "male", "female"',
+        widget=SexSelectionWidget(attrs={'data-placeholder': '"male", "female" are only options',
                                          "data-minimum-input-length": 0}),
-        initial=['male', 'female']
     )
     breed_sam = forms.ModelMultipleChoiceField(
         label='Breed Sample',
         required=False,
         queryset=BreedSample.objects.all(),
-        widget=BreedSamWidget(attrs={'data-placeholder': 'Breed fields include "Human", "unknown", "not applicable"',
+        widget=BreedSamWidget(attrs={'data-placeholder': '"Human", "unknown", "not applicable"',
                                      "data-minimum-input-length": 0}),
-        initial='Human'
     )
     cultivar_sam = forms.ModelMultipleChoiceField(
         label='Cultivar Sample',
         required=False,
         queryset=CultivarSample.objects.all(),
-        widget=CultivarSamWidget(attrs={'data-placeholder': '...',
+        widget=CultivarSamWidget(attrs={'data-placeholder': '"unknown is the most common option"',
                                         "data-minimum-input-length": 0}),
-        initial='unknown'
     )
     ecotype_sam = forms.ModelMultipleChoiceField(
         label='Ecotype Sample',
         required=False,
         queryset=EcotypeSample.objects.all(),
-        widget=EcotypeSamWidget(attrs={'data-placeholder': '...',
+        widget=EcotypeSamWidget(attrs={'data-placeholder': '"unknown is the most common option"',
                                        "data-minimum-input-length": 0}),
-        initial='unknown'
     )
     iosolate_sam = forms.ModelMultipleChoiceField(
         label='Isolate Sample',
         required=False,
         queryset=IsolateSample.objects.all(),
-        widget=IsolateSamWidget(attrs={'data-placeholder': 'Isolate fields include "Human", "stool", "oral cavity"',
+        widget=IsolateSamWidget(attrs={'data-placeholder': '"Human", "stool", "oral cavity"',
                                        "data-minimum-input-length": 0}),
-        initial='Bacteria'
     )
     libraryselection = forms.ModelMultipleChoiceField(
         label='Library Selection',
         required=False,
         queryset=Distinct_Library_Selection.objects.all(),
-        widget=LibrarySelectionWidget(attrs={'data-placeholder': 'Library Selection fields include "PCR",'
-                                                                 '"RT-PCR", "cDNA"',
+        widget=LibrarySelectionWidget(attrs={'data-placeholder': '"PCR", "RT-PCR", "cDNA"',
                                              "data-minimum-input-length": 0}),
-        initial=['PCR', 'RANDOM']
     )
     strain_sam = forms.ModelMultipleChoiceField(
         label='Strain Sample',
         required=False,
         queryset=StrainSample.objects.all(),
-        widget=StrainSelectionWidget(attrs={'data-placeholder': '...',
+        widget=StrainSelectionWidget(attrs={'data-placeholder': '"unknown is the most common field"',
                                             "data-minimum-input-length": 0}),
-        initial='complex microbiome'
     )
 
     class Meta:
