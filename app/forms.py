@@ -159,7 +159,7 @@ class MetadataForm(forms.ModelForm):
         label='Center Name',
         required=False,
         queryset=Center_Name.objects.all(),
-        widget=CenterNameSelectionWidget(attrs={'data-placeholder': '"Harvard University"',
+        widget=CenterNameSelectionWidget(attrs={'data-placeholder': '"Harvard University", "MIT"',
                                                 "data-minimum-input-length": 0}),
     )
     experiment = forms.ModelMultipleChoiceField(
