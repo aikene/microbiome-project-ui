@@ -21,3 +21,4 @@ sqlparse==0.4.2
 urllib3==1.26.15
 boto3
 django-select2==8.1.1
+django-redis==5.2.0

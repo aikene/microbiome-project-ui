@@ -140,7 +140,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-
+STATIC_ROOT = 'app/static/'
 STATIC_URL = 'app/static/'
 
 STATICFILES_DIRS = (
@@ -198,11 +198,11 @@ CORS_ORIGIN_ALLOW_ALL = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -212,21 +212,32 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         #'LOCATION': '',
     },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
 
+# Tell select2 which cache configuration to use:
+SELECT2_CACHE_BACKEND = "select2"
+
 # Email Service Variables
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_BACKEND = env('EMAIL_BACKEND')
+EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
-MAIL_DEBUG = 1
 
 # MEDIA_PATH = os.path.join(BASE_DIR, 'static', 'uploads')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'uploads')
 MEDIA_URL = '/uploads/'
+
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+MAIL_DEBUG = 1
 
 S3_PRIVATE_STUDIES_PATH = '/home/qiime2/qiime2storage/studies/private'
