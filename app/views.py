@@ -817,7 +817,7 @@ def set_email_notification(request):
         Status.objects.filter(user_id=user.username).update(email_notification=receive_email)
 
         if receive_email:
-            return JsonResponse({"success": True, "message": "You will receive email notifications."})
+            return JsonResponse({"success": True, "message": "You will start receiving email notifications."})
         else:
             return JsonResponse({"success": True, "message": "You will no longer receive email notifications."})
 
@@ -863,6 +863,12 @@ def upload(request):
 
         # Extract the metadata from the csv
         success, msg, metadata_records = utils.get_metadata_from_csv(metadata_csv)
+        try:
+            os.remove(metadata_csv)
+        except:
+            # Leave the csv file
+            pass
+
         if not success:
             return JsonResponse({"success": success, "message": msg})
 
@@ -914,21 +920,27 @@ def upload(request):
                                      )
 
             if library_layout.upper() == 'SINGLE':
-                # Save the fastq file in the S3 bucket
-                utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
-                                file_name=metadata_record.forward_fastq_f_name,
-                                file=metadata_record.forward_fastq_file)
+                try:
+                    # Save the fastq file in the S3 bucket
+                    utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
+                                    file_name=metadata_record.forward_fastq_f_name,
+                                    file=metadata_record.forward_fastq_file)
+                except:
+                    return JsonResponse({"success": False, "message": f'Unable to save the files.'})
 
             else:
-                # Save the forward fastq file in the S3 bucket
-                utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
-                                file_name=metadata_record.forward_fastq_f_name,
-                                file=metadata_record.forward_fastq_file)
+                try:
+                    # Save the forward fastq file in the S3 bucket
+                    utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
+                                    file_name=metadata_record.forward_fastq_f_name,
+                                    file=metadata_record.forward_fastq_file)
 
-                # Save the reverse fastq file in the S3 bucket
-                utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
-                                file_name=metadata_record.reverse_fastq_f_name,
-                                file=metadata_record.reverse_fastq_file)
+                    # Save the reverse fastq file in the S3 bucket
+                    utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
+                                    file_name=metadata_record.reverse_fastq_f_name,
+                                    file=metadata_record.reverse_fastq_file)
+                except:
+                    return JsonResponse({"success": False, "message": f'Unable to save the files.'})
 
             # Create record in the status table
             status = create_status_record(acc=run_id,

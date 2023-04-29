@@ -195,27 +195,17 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'NcbiSraPostgress',
-        'USER': 'postgres',
-        'PASSWORD': 'ThisIsAMasterPassword',
-        'HOST': 'ncbi-sra-aurora-postgres.cgxdzuzsyrfm.us-west-2.rds.amazonaws.com',
-        'PORT': 5432,
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
+
 
 CACHES = {
     'default': {
@@ -239,4 +229,4 @@ MAIL_DEBUG = 1
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'uploads')
 MEDIA_URL = '/uploads/'
 
-S3_PRIVATE_STUDIES_PATH = '/Users/burak/Desktop/temp2/studies/private'
+S3_PRIVATE_STUDIES_PATH = '/home/qiime2/qiime2storage/studies/private'
