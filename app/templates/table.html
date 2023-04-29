@@ -150,27 +150,29 @@ Search | {{ username }}
                             {% comment %} Checkbox {% endcomment %}
                             {% if single_metadata.acc in completed_accs %}
                                 {% if single_metadata.acc in selected_visual %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" class="large-checkbox" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked></td>
                                 {% else %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" class="large-checkbox" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}"></td>
                                 {% endif %}
                             {% else %}
                                 {% if single_metadata.acc in selected_visual %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked disabled></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" class="large-checkbox" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" checked disabled></td>
                                 {% else %}
-                                    <td><input id="chk_{{ single_metadata.acc }}" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" disabled></td>
+                                    <td><input id="chk_{{ single_metadata.acc }}" class="large-checkbox" type="checkbox" name="chk_{{ single_metadata.acc }}" value="{{ single_metadata.acc }}" disabled></td>
                                 {% endif %}
                             {% endif %}
 
                             {% comment %} Add button {% endcomment %}
                             {% if single_metadata.acc in completed_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}" >Ready</td>
+                                <td id="lbl_{{ single_metadata.acc }}" ><span class="badge badge-success">Completed</span></td>
+                            {% elif single_metadata.acc in queued_accs %}
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-warning">Queued</span></td>
                             {% elif single_metadata.acc in in_progress_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}">In progress</td>
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-primary">Running</span></td>
                             {% elif single_metadata.acc in errored_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}">Unable to process</td>
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-secondary">Unable to process</span></td>
                             {% else %}
-                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Add</button></td>
+                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" class="btn btn-primary" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Add</button></td>
                             {% endif %}
                         </tr>
                     {% endfor %}
@@ -257,7 +259,7 @@ Search | {{ username }}
             <div class="container my-3 p-3">
                 <div class="row justify-content-center">
                     <div class="col-lg-5">
-                        <div class="alert alert-secondary text-center card shadow-lg border-0 rounded-lg mt-0 mb-3">
+                        <div class="alert alert-secondary text-center card shadow-sm border-0 rounded-lg mt-0 mb-3">
                             Your search did not return any results.
                         </div>
                     </div>

@@ -153,3 +153,7 @@
 .table-generic-th {
     overflow: hidden;
 }
+
+.large-checkbox {
+    scale: 1.5;
+}

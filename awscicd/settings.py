@@ -160,22 +160,32 @@ STATICFILES_EXTENSIONS = ['html']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
-        # 'file': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.FileHandler',
-        #     'filename': '/var/log/django/debug.log',
-        # },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
+    'version': 1,
+
+    # retain the default loggers
+    'disable_existing_loggers': False,
+
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logging.log',
+            'formatter': 'verbose',
         },
-    }
+    },
+    # A logger for DEBUG that has a handler called 'file'.
+    'loggers': {
+        '': {
+            # Call the file variable in handler
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+            'verbose': {
+                'format': '%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s | %(message)s'
+            },
+        },
 }
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
@@ -185,14 +195,25 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'NAME': 'NcbiSraPostgress',
+        'USER': 'postgres',
+        'PASSWORD': 'ThisIsAMasterPassword',
+        'HOST': 'ncbi-sra-aurora-postgres.cgxdzuzsyrfm.us-west-2.rds.amazonaws.com',
+        'PORT': 5432,
     }
 }
 
@@ -212,3 +233,10 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
+
+# MEDIA_PATH = os.path.join(BASE_DIR, 'static', 'uploads')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'uploads')
+MEDIA_URL = '/uploads/'
+
+S3_PRIVATE_STUDIES_PATH = '/Users/burak/Desktop/temp2/studies/private'

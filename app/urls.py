@@ -3,7 +3,7 @@ from . import views
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import ResetPasswordView
+from .views import ResetPasswordView, UploadView
 
 
 urlpatterns = [
@@ -14,7 +14,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("profile/<str:username>/", views.user_profile, name="profile"),
     path("profile/<str:username>/<int:page>/", views.user_profile, name="profile"),
-    path("profile/<str:username>/<int:page>/<int:show_history>/", views.user_profile, name="profile"),
+    path("profile/<str:username>/<int:page>/<int:show_uploads>/", views.user_profile, name="profile"),
     path("editprofile/<str:field>", views.edit_profile, name="edit_profile"),
     path("generate_visualization/", views.generate_visualization, name="generate_visualization"),
     path("download_results_csv/<str:uuid>",views.download_results_csv, name="download_results_csv"),
@@ -38,9 +38,14 @@ urlpatterns = [
     path("history/detail/<int:search_id>", views.populate_home_page, name='history_detail'),
     path("history/<str:username>/", views.history, name="history"),
     path("history/<str:username>/<int:page>/", views.history, name="history"),
+    # path("upload/", UploadView.as_view(), name="upload"),
+    # path("upload_post/", views.upload_post, name="upload_post"),
+    path("upload/", views.upload, name="upload"),
+    path("download_metadata_template/", views.download_metadata_template, name="download_metadata_template"),
     path("set_email_notification/", views.set_email_notification, name="set_email_notification"),
     path("delete_account_confirm/<str:username>/", views.delete_account_confirm, name="delete_account_confirm"),
     path("delete_account/<str:username>/", views.delete_account, name="delete_account"),
+    path("delete_uploaded_study/<str:run_id>/", views.delete_uploaded_study, name="delete_uploaded_study"),
     # path("featuretable/", views.featuretable, name="featuretable"),
     # path("taxonomy/overview/<str:uuid>", views.taxonomy_overview, name="taxonomy_overview"),
     # path("featuretable/overview/<str:uuid>", views.featuretable_overview, name="featuretable_overview"),

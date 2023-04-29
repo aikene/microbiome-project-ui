@@ -176,6 +176,11 @@ hr {
   justify-content: center;
 }
 
+.badge-font {
+  font-weight: 400 !important;
+  font-size: 0.9rem;
+}
+
 /* ==================== Table */
 table {
   /*font: 400 16px/1.5 Proxima Nova,proxima-nova,Helvetica Neue,Helvetica,Arial,sans-serif;*/
@@ -183,6 +188,7 @@ table {
   width: 100%;
   margin-bottom: 40px;
   text-align: center;
+  table-layout : fixed;
 }
 
 thead {
@@ -190,8 +196,38 @@ thead {
 }
 
 tr {
-  height: 40px;
+  height: 70px;
   border-bottom: 1px solid rgba(221, 221, 221, .5);
   border-collapse: collapse;
 }
+
+@keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+    }
+
+    75% {
+        opacity: 0;
+        height: 100%;
+    }
+
+    100% {
+        opacity: 0;
+        height: 0px;
+    }
+}
+
+div[class^='table-row-'] {
+    animation-name: hide;
+    animation-duration: 0.75s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
 /* ==================== End Table */
+
+.hidden-elm {
+  display: none;
+}
+
+
