@@ -5,7 +5,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 import numpy as np
+from tablib import Dataset
 
+from .resources import DataUploader
 from .models import User
 
 
@@ -96,3 +98,19 @@ def user_profile(request, username):
         "email": username.email,
         "date_joined": username.date_joined,
     })
+
+
+def import_data(request):   # <- added by nlandi
+    if request.method == 'POST':
+        data_uploader = DataUploader()
+        dataset = Dataset()
+        new_data = request.FILES['importData']
+
+        imported_data = dataset.load(new_data.read())
+        result = data_uploader.import_data(dataset, dry_run=True)
+
+        if not result.has_errors():
+            # Import now
+            employee_resource.import_data(dataset, dry_run=False)
+
+    return render(request, 'import.html')
