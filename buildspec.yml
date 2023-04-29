@@ -15,7 +15,6 @@ phases:
   build:
     commands:
       - echo Building the application
-      - python3 manage.py collectstatic --noinput
   post_build:
     commands:
       - echo Build completed on `date`
