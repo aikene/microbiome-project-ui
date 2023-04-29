@@ -10,13 +10,13 @@ Profile | {{ username }}
         <div class="page-msg hidden-msg alert">
         </div>
 
-        <div id="show-history" style="display: none;">{{ show_history }}</div>
+        <div id="show-history" style="display: none;">{{ show_uploads }}</div>
 
         <input class="account-input" id="tab1" type="radio" name="tabs" checked>
         <label class="account-label" for="tab1">Profile</label>
 
-        <input class="account-input" id="tab2" type="radio" name="tabs" >
-        <label class="account-label" for="tab2">Search History</label>
+        <input class="account-input" id="tab2" type="radio" name="tabs">
+        <label class="account-label" for="tab2">Uploads</label>
 
         {% comment %} Profile section {% endcomment %}
         <section class="account-section" id="content1">
@@ -230,97 +230,127 @@ Profile | {{ username }}
 
         </section>
 
-        {% comment %} Search History section {% endcomment %}
-        <section class="account-section"  id="content2">
-            <table class="sortable">
-                <thead>
-                    <tr>
-                        <th>Result ID</th>
-                        <th>Acc</th>
-                        <th>Taxon</th>
-                        <th>Confidence</th>
-                        <th>Abundance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {%  for result in results %}
+        {% comment %} Uploads section {% endcomment %}
+        <section class="account-section" id="content2">
+            {% csrf_token %}
+            {% if metadata %}
+                <table class="sortable">
+                    <thead>
                         <tr>
-                            <td>{{ result.result_id }}</td>
-                            <td>{{ result.acc }}</td>
-                            <td>{{ result.taxon }}</td>
-                            <td>{{ result.confidence }}</td>
-                            <td>{{ result.abundance }}</td>
+                            <th>Run ID</th>
+                            <th>Upload Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {%  for single_metadata in metadata %}
+                            <tr class="table-row-{{ single_metadata.acc }}">
+                                <td>{{ single_metadata.acc }}</td>
+                                <td>{{ single_metadata.created_at }}</td>
 
-            <div class="pagination-btns">
-                <ul class="pagination pagination-sm pagination-circle">
-                    {% if results.has_previous %}
+                                {% comment %} Status {% endcomment %}
+                                {% if single_metadata.acc in completed_accs %}
+                                    <td><span class="badge badge-success badge-font">Completed</span></td>
+                                {% elif single_metadata.acc in queued_accs %}
+                                    <td><span class="badge badge-warning badge-font">Queued</span></td>
+                                {% elif single_metadata.acc in in_progress_accs %}
+                                    <td><span class="badge badge-primary badge-font">Running</span></td>
+                                {% elif single_metadata.acc in errored_accs %}
+                                    <td><span class="badge badge-secondary badge-font">Unable to process</span></td>
+                                {% endif %}
+
+                                {% comment %} Delete Button {% endcomment %}
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ single_metadata.acc }}">Delete</button>
+                                    <div class="hidden-elm confirm-btns-{{ single_metadata.acc }}">
+                                        <div>Are you sure?</div>
+                                        <button type="button" class="btn btn-danger btn-sm delete-confirm-btn" data-id="{{ single_metadata.acc }}">Yes</button>
+                                        <button type="button" class="btn btn-secondary btn-sm cancel-btn" data-id="{{ single_metadata.acc }}">Cancel</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="pagination-btns">
+                    <ul class="pagination pagination-sm pagination-circle">
+                        {% if metadata.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'profile' username=user.username page=1 show_uploads=1 %}">First</a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" aria-label="Previous" href="{% url 'profile' username=user.username page=metadata.previous_page_number show_uploads=1 %}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" aria-label="Previous" href="{% url 'profile' username=user.username page=metadata.previous_page_number show_uploads=1 %}">
+                                    {{ metadata.previous_page_number }}
+                                </a>
+                            </li>
+
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">First</a>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <a class="page-link" aria-label="Previous" href="#" tabindex="-1">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                        {% endif%}
+
+                    <li class="page-item active">
+                        <a class="page-link" href="#">{{metadata.number}}<span class="sr-only">(current)</span></a>
+                    </li>
+
+                    {% if metadata.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="{% url 'profile' username=user.username page=1 show_history=1 %}">First</a>
+                            <a class="page-link" href="{% url 'profile' username=user.username page=metadata.next_page_number show_uploads=1%}">{{ metadata.next_page_number }}</a>
                         </li>
 
                         <li class="page-item">
-                            <a class="page-link" aria-label="Previous" href="{% url 'profile' username=user.username page=results.previous_page_number show_history=1 %}">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
+                            <a class="page-link" aria-label="Next" href="{% url 'profile' username=user.username page=metadata.next_page_number show_uploads=1%}">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
                             </a>
                         </li>
 
                         <li class="page-item">
-                            <a class="page-link" aria-label="Previous" href="{% url 'profile' username=user.username page=results.previous_page_number show_history=1 %}">
-                                {{ results.previous_page_number }}
-                            </a>
+                            <a class="page-link" href="{% url 'profile' username=user.username page=metadata.paginator.num_pages show_uploads=1%}">Last</a>
                         </li>
-
                     {% else %}
                         <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">First</a>
+                            <a class="page-link" aria-label="Next" href="#" tabindex="-1">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </li>
 
                         <li class="page-item disabled">
-                            <a class="page-link" aria-label="Previous" href="#" tabindex="-1">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                            </a>
+                            <a class="page-link" href="#" tabindex="-1">Last</a>
                         </li>
                     {% endif%}
-
-                <li class="page-item active">
-                    <a class="page-link" href="#">{{results.number}}<span class="sr-only">(current)</span></a>
-                </li>
-
-                {% if results.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{% url 'profile' username=user.username page=results.next_page_number show_history=1%}">{{ results.next_page_number }}</a>
-                    </li>
-
-                    <li class="page-item">
-                        <a class="page-link" aria-label="Next" href="{% url 'profile' username=user.username page=results.next_page_number show_history=1%}">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
-
-                    <li class="page-item">
-                        <a class="page-link" href="{% url 'profile' username=user.username page=results.paginator.num_pages show_history=1%}">Last</a>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" aria-label="Next" href="#" tabindex="-1">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
-
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Last</a>
-                    </li>
-                {% endif%}
-                </ul>
-            </div>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="container my-3 p-3">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="alert alert-secondary text-center card shadow-sm border-0 rounded-lg mt-0 mb-3">
+                                You have no uploads.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
         </section>
     </div>

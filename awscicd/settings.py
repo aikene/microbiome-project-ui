@@ -160,22 +160,32 @@ STATICFILES_EXTENSIONS = ['html']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
-        # 'file': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.FileHandler',
-        #     'filename': '/var/log/django/debug.log',
-        # },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
+    'version': 1,
+
+    # retain the default loggers
+    'disable_existing_loggers': False,
+
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logging.log',
+            'formatter': 'verbose',
         },
-    }
+    },
+    # A logger for DEBUG that has a handler called 'file'.
+    'loggers': {
+        '': {
+            # Call the file variable in handler
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+            'verbose': {
+                'format': '%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s | %(message)s'
+            },
+        },
 }
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
@@ -195,6 +205,7 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
+
 
 CACHES = {
     'default': {
@@ -217,8 +228,16 @@ SELECT2_CACHE_BACKEND = "select2"
 EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_USE_TLS = True
+
+# MEDIA_PATH = os.path.join(BASE_DIR, 'static', 'uploads')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'uploads')
+MEDIA_URL = '/uploads/'
+
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
+
+S3_PRIVATE_STUDIES_PATH = '/home/qiime2/qiime2storage/studies/private'

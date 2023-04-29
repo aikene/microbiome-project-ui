@@ -1,7 +1,32 @@
+import os.path
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from awscicd.settings import S3_PRIVATE_STUDIES_PATH
+
 from awscicd import settings
+
+
+# ======= DO NOT DELETE the get_upload_path function and the Uploads class ======
+def get_upload_path(instance, fname):
+    print(os.path.join(S3_PRIVATE_STUDIES_PATH, instance.user_id, instance.acc))
+    # return '/uploads'
+    return os.path.join(S3_PRIVATE_STUDIES_PATH, instance.user_id, instance.acc)
+
+
+class Uploads(models.Model):
+    upload_id = models.AutoField(primary_key=True)
+    user_id = models.CharField(max_length=255)
+    # file = models.CharField(max_length=4096, blank=True, null=True)
+    file = models.FileField(upload_to=get_upload_path)
+    uploaded_at = models.CharField(max_length=255, blank=True, null=True)
+    acc = models.CharField(max_length=4096)
+
+    class Meta:
+        managed = False
+        db_table = 'uploads'
+# ======= DO NOT DELETE the get_upload_path function and the Uploads class ======
 
 
 class User(AbstractUser):
@@ -48,8 +73,6 @@ class AuthPermission(models.Model):
         managed = False
         db_table = 'auth_permission'
         unique_together = (('content_type', 'codename'),)
-
-
 
 
 class DjangoContentType(models.Model):
@@ -111,7 +134,6 @@ class History(models.Model):
         db_table = 'history'
 
 
-
 class Metadata(models.Model):
     acc = models.TextField(primary_key=True)
     assay_type = models.TextField(blank=True, null=True)
@@ -153,10 +175,13 @@ class Metadata(models.Model):
     iosolate_sam = models.TextField(blank=True, null=True)
     race_ethnicity = models.TextField(blank=True, null=True)
     gender = models.TextField(blank=True, null=True)
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'metadata'
+
 
 class PostProcessorStudy(models.Model):
     id = models.TextField(primary_key=True)
@@ -182,15 +207,15 @@ class Results(models.Model):
 
 
 class Status(models.Model):
-    acc = models.OneToOneField(Metadata, models.DO_NOTHING, db_column='acc', primary_key=True)
+    acc = models.CharField(primary_key=True, max_length=255)
     user_id = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
+    email_notification = models.BooleanField()
     public = models.BooleanField()
     status = models.SmallIntegerField()
     output_path = models.CharField(max_length=1024, blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    email_notification = models.BooleanField()
 
     class Meta:
         managed = False
