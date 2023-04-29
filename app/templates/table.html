@@ -128,24 +128,38 @@ Search | {{ username }}
                             <th>Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
+                        <th>Process</th>
                         <th>Include in Visualization</th>
-                        <th>Add</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     {%  for single_metadata in metadata %}
                         <tr>
-                            <td>{{ single_metadata.acc }}</td>
-                            <td>{{ single_metadata.librarylayout }}</td>
-                            <td>{{ single_metadata.sra_study }}</td>
-                            <td>{{ single_metadata.center_name }}</td>
-                            <td>{{ single_metadata.experiment }}</td>
-                            <td>{{ single_metadata.sample_acc }}</td>
-                            <td>{{ single_metadata.biosample }}</td>
-                            <td>{{ single_metadata.organism }}</td>
-                            <td>{{ single_metadata.bioproject }}</td>
-                            <td>{{ single_metadata.geo_loc_name_country_calc }}</td>
-                            <td>{{ single_metadata.geo_loc_name_country_continent_calc }}</td>
+                            <td class="table-generic-td">{{ single_metadata.acc }}</td>
+                            <td class="table-generic-td">{{ single_metadata.librarylayout }}</td>
+                            <td class="table-generic-td">{{ single_metadata.sra_study }}</td>
+                            <td class="table-generic-td">{{ single_metadata.center_name }}</td>
+                            <td class="table-generic-td">{{ single_metadata.experiment }}</td>
+                            <td class="table-generic-td">{{ single_metadata.sample_acc }}</td>
+                            <td class="table-generic-td">{{ single_metadata.biosample }}</td>
+                            <td class="table-generic-td">{{ single_metadata.organism }}</td>
+                            <td class="table-generic-td">{{ single_metadata.bioproject }}</td>
+                            <td class="table-generic-td">{{ single_metadata.geo_loc_name_country_calc }}</td>
+                            <td class="table-generic-td">{{ single_metadata.geo_loc_name_country_continent_calc }}</td>
+
+                            {% comment %} Add button {% endcomment %}
+                            {% if single_metadata.acc in completed_accs %}
+                                <td id="lbl_{{ single_metadata.acc }}" ><span class="badge badge-success">Completed</span></td>
+                            {% elif single_metadata.acc in queued_accs %}
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-warning">Queued</span></td>
+                            {% elif single_metadata.acc in in_progress_accs %}
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-primary">Running</span></td>
+                            {% elif single_metadata.acc in errored_accs %}
+                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-secondary">Unable to process</span></td>
+                            {% else %}
+                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" class="btn btn-primary" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Process</button></td>
+                            {% endif %}
 
                             {% comment %} Checkbox {% endcomment %}
                             {% if single_metadata.acc in completed_accs %}
@@ -162,18 +176,6 @@ Search | {{ username }}
                                 {% endif %}
                             {% endif %}
 
-                            {% comment %} Add button {% endcomment %}
-                            {% if single_metadata.acc in completed_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}" ><span class="badge badge-success">Completed</span></td>
-                            {% elif single_metadata.acc in queued_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-warning">Queued</span></td>
-                            {% elif single_metadata.acc in in_progress_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-primary">Running</span></td>
-                            {% elif single_metadata.acc in errored_accs %}
-                                <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-secondary">Unable to process</span></td>
-                            {% else %}
-                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" class="btn btn-primary" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Add</button></td>
-                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -7,12 +7,6 @@ from .common_models import Distinct_Library_Layout, Distinct_SRA, Distinct_Sex, 
     Continent
 
 
-# class UploadForm(forms.ModelForm):
-#     class Meta:
-#         model = Upload
-#         fields = ('file', 'uploaded_at', )
-
-
 class LibraryLayoutWidget(s2forms.Select2MultipleWidget):
     queryset = Distinct_Library_Layout.objects.all()
     search_fields = [
