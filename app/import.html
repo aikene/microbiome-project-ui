@@ -1,0 +1,10 @@
+{% block content %}
+<h3>Import Data</h3>
+<p>importing to database</p>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="importData">
+    <button class="btn btn-primary" type="submit">Import</button>
+  </form>
+<a href="{% url 'home' %}">Return Home View</a>
+  {% endblock %}
