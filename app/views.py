@@ -606,7 +606,9 @@ def build_query(list_of_query_lists):
 def search(request, page=1, order_by='acc', direction='asc'):
     if request.method == 'POST':
         metadata_fields = ['librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
-                           'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc']
+                           'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc',
+                           'ecotype_sam', 'cultivar_sam', 'breed_sam', 'strain_sam', 'iosolate_sam', 'race_ethnicity',
+                           'gender', 'libraryselection']
 
         username = None
         if request.user.is_authenticated:
