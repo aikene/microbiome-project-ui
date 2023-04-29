@@ -9,5 +9,6 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("profile/<str:username>", views.user_profile, name="profile"),
+    path("import_data", views.import_data, name="import_data"),   # <- added by nlandi
     path("visualization/", views.visualization, name="visualization"),
 ]
