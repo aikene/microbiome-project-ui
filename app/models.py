@@ -13,3 +13,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username}"
+
+
+class Metadata(models.Model):   # <- added by nlandi
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=60)
+    email = models.EmailField(blank=True)
+    day_started = models.DateField()
+    location = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.first_name
