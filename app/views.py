@@ -944,6 +944,7 @@ def upload(request):
                 try:
                     logger.info(f"Saving {metadata_record.forward_fastq_f_name}")
                     # Save the forward fastq file in the S3 bucket
+                    logger.info(f"folder {os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id)}")
                     utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
                                     file_name=metadata_record.forward_fastq_f_name,
                                     file=metadata_record.forward_fastq_file)

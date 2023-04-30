@@ -1,7 +1,10 @@
 import csv
+import logging
 import os
 import shutil
 import copy
+
+logger = logging.getLogger('django')
 
 from .user_metadata_record import UserMetadataRecord
 
@@ -218,5 +221,10 @@ def create_txt(file_path, contents=''):
 
 
 def save_file(folder, file_name, file):
-    fs = FileSystemStorage(location=folder)
-    fs.save(file_name, file)
+    logger.info("Inside save_file function.")
+    try:
+        fs = FileSystemStorage(location=folder)
+        fs.save(file_name, file)
+    except Exception as e:
+        logger.info("ERROR!")
+        logger.info(str(e))
