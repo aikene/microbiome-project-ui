@@ -240,5 +240,4 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
 
-# S3_PRIVATE_STUDIES_PATH = '/home/ubuntu/qiime2storage/studies/private'
-S3_PRIVATE_STUDIES_PATH = '/Users/burak/Desktop/temp2/studies/private'
+S3_PRIVATE_STUDIES_PATH = '/home/ubuntu/qiime2storage/studies/private'
