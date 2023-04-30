@@ -830,16 +830,20 @@ def set_email_notification(request):
 @login_required(login_url="login")
 def upload(request):
     if request.method == 'POST':
+        logger.info('Received post request for upload.')
         if request.user.is_authenticated:
             username = request.user.username
             email = request.user.email
             email_notification = request.user.email_notification
+            logger.info(f'{username} is logged in.')
         else:
             return JsonResponse({"success": False, "message": 'Please login first.'})
 
         if len(request.FILES) == 0:
+            logger.info(f'request.FILES includes no files.')
             return render(request, 'upload.html')
 
+        logger.info(f"Getting user's previous run ids.")
         # Get user's previous run ids
         query_set_previous_run_ids = Metadata.objects.filter(user_id=username).values_list('acc', flat=True)
         previous_run_ids = set(list(query_set_previous_run_ids))
@@ -850,6 +854,7 @@ def upload(request):
         # Metadata CSV file path
         metadata_csv = ''
 
+        logger.info(f"Identifying the metadata and fastq files.")
         for f in request.FILES.values():
             if f.name.endswith('.csv'):
                 if metadata_csv != '':
@@ -863,6 +868,7 @@ def upload(request):
             elif f.name.endswith('.fastq'):
                 fastq_files[os.path.splitext(f.name)[0]] = (f.name, f)
 
+        logger.info(f"Extracting metadata info and getting fastq files.")
         # Extract the metadata from the csv
         success, msg, metadata_records = utils.get_metadata_from_csv(metadata_csv)
         try:
@@ -874,13 +880,15 @@ def upload(request):
         if not success:
             return JsonResponse({"success": success, "message": msg})
 
+        logger.info(f"Populating the metadata records.")
         # Populate the metadata records
         success, msg, metadata_records = utils.populate_user_metadata_records(fastq_files, metadata_records, previous_run_ids)
         if not success:
             return JsonResponse({"success": success, "message": msg})
 
-        # Update the user metadata table
+        # Update the metadata table
         for metadata_record in metadata_records:
+            logger.info(f"Updating the metadata table for {run_id}.")
             run_id = metadata_record.run_id
             current_run = metadata_record.contents
             library_layout = current_run.get('Library Layout', '')
@@ -921,8 +929,10 @@ def upload(request):
                                      created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                      )
 
+
             if library_layout.upper() == 'SINGLE':
                 try:
+                    logger.info(f"Saving {metadata_record.forward_fastq_f_name}")
                     # Save the fastq file in the S3 bucket
                     utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
                                     file_name=metadata_record.forward_fastq_f_name,
@@ -932,11 +942,13 @@ def upload(request):
 
             else:
                 try:
+                    logger.info(f"Saving {metadata_record.forward_fastq_f_name}")
                     # Save the forward fastq file in the S3 bucket
                     utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
                                     file_name=metadata_record.forward_fastq_f_name,
                                     file=metadata_record.forward_fastq_file)
 
+                    logger.info(f"Saving {metadata_record.reverse_fastq_f_name}")
                     # Save the reverse fastq file in the S3 bucket
                     utils.save_file(folder=os.path.join(S3_PRIVATE_STUDIES_PATH, username, run_id),
                                     file_name=metadata_record.reverse_fastq_f_name,
@@ -944,6 +956,7 @@ def upload(request):
                 except:
                     return JsonResponse({"success": False, "message": f'Unable to save the files.'})
 
+            logger.info(f"Creating record in the status table for {run_id}")
             # Create record in the status table
             status = create_status_record(acc=run_id,
                                           user_id=username,
@@ -954,6 +967,7 @@ def upload(request):
             if status is None:
                 return JsonResponse({"success": False, "message": f'Run ID {run_id} already exists.'})
 
+            logger.info(f"Committing the metadata record for {run_id}")
             # Commit records
             try:
                 metadata_user.save()
@@ -961,6 +975,7 @@ def upload(request):
                 logger.error(str(e))
                 return JsonResponse({"success": False, "message": 'Unable to save the metadata.'})
 
+            logger.info(f"Committing the status record for {run_id}")
             try:
                 status.save()
             except Exception as e:
@@ -968,6 +983,7 @@ def upload(request):
                 logger.error(str(e))
                 return JsonResponse({"success": False, "message": 'Unable to save the status.'})
 
+            logger.info(f"Creating the complete.txt file for {run_id}")
             # Create complete.txt
             try:
                 utils.create_txt(os.path.join(S3_PRIVATE_STUDIES_PATH, request.user.username, run_id, 'complete.txt'))
@@ -976,6 +992,8 @@ def upload(request):
                 status.delete()
                 logger.error(str(e))
                 return JsonResponse({"success": False, "message": 'Unable to save the status.'})
+
+            logger.info(f"Successfully uploaded {run_id}")
 
         return JsonResponse({"success": success, "message": 'Files are uploaded successfully.'})
 

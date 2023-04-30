@@ -100,7 +100,7 @@ async function get_progress(task_id, timestamp) {
                         $(".progress-bar").css("width","100%");
                         $(".progress").hide();
                         $("#subtitleMsg").hide();
-                        $("#progress-msg").html("<p>Your data visualization is ready to view. click <a href='/download_results_csv/"+timestamp+"-"+task_id+"/results.csv' target='_blank'>here</a> to download CSV.</p>");
+                        $("#progress-msg").html("<p>Your data visualization is ready to view. click <a href='/download_results_csv/"+timestamp+"-"+task_id target='_blank'>here</a> to download CSV.</p>");
                         $("#btnTaxa").html("View")
                         $("#btnTaxa").attr("href","/taxonomic_bar_plots/"+timestamp+"-"+task_id);
                         $("#btnFeature").html("View")
