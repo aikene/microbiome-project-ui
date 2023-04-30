@@ -216,8 +216,8 @@ def create_txt(file_path, contents=''):
         with open(file_path, 'w') as f:
             if contents:
                 f.write(contents)
-    except Exception:
-        raise ValueError(f'Unable to create {file_path}.')
+    except Exception as e:
+        raise ValueError(f'Unable to create {file_path}. {str(e)}')
 
 
 def save_file(folder, file_name, file):
