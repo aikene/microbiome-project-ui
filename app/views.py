@@ -157,13 +157,16 @@ def check_run_status(request, runId):
 
     if not row:
         if request.user.is_authenticated:
-            cur.execute("INSERT INTO status (acc, user_id, email, public, status, created_at, updated_at) \
-             VALUES (%s, %s, %s, %s, %s, NOW(), NOW())",
-            (runId, request.user.id, request.user.email, '1', 0,))
+            logger.info(f"User is authenticated. username: {request.user.username}")
+            cur.execute("INSERT INTO status (acc, user_id, email, email_notification, public, status, created_at, "
+                        "updated_at) \
+             VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())",
+            (runId, request.user.username, request.user.email, request.user.email_notification,  '1', 0,))
            
         else:
-            cur.execute("INSERT INTO status (acc, public, status, created_at, updated_at) \
-                                        VALUES (%s, %s, %s, NOW(), NOW())",
+            logger.info("User is not authenticated.")
+            cur.execute("INSERT INTO status (acc, public, email_notification, status, created_at, updated_at) \
+                                        VALUES (%s, %s, FALSE, %s, NOW(), NOW())",
                     (runId,'1',0,))
 
         conn.commit()
