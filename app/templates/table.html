@@ -330,6 +330,7 @@ Search | {{ username }}
         }
 
         function callDataCollectionAPI(runId){
+            fetch("/api/check_run_status/"+runId);
             //call data collection API to process the run Id
             $.ajax("http://44.232.220.91:8000", {
                 data : JSON.stringify({run_id: runId}),
