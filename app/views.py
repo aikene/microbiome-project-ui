@@ -888,8 +888,8 @@ def upload(request):
 
         # Update the metadata table
         for metadata_record in metadata_records:
-            logger.info(f"Updating the metadata table for {run_id}.")
             run_id = metadata_record.run_id
+            logger.info(f"Updating the metadata table for {run_id}.")
             current_run = metadata_record.contents
             library_layout = current_run.get('Library Layout', '')
             metadata_user = Metadata(user_id=username,
