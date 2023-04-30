@@ -8,27 +8,6 @@ from awscicd.settings import S3_PRIVATE_STUDIES_PATH
 from awscicd import settings
 
 
-# ======= DO NOT DELETE the get_upload_path function and the Uploads class ======
-def get_upload_path(instance, fname):
-    print(os.path.join(S3_PRIVATE_STUDIES_PATH, instance.user_id, instance.acc))
-    # return '/uploads'
-    return os.path.join(S3_PRIVATE_STUDIES_PATH, instance.user_id, instance.acc)
-
-
-class Uploads(models.Model):
-    upload_id = models.AutoField(primary_key=True)
-    user_id = models.CharField(max_length=255)
-    # file = models.CharField(max_length=4096, blank=True, null=True)
-    file = models.FileField(upload_to=get_upload_path)
-    uploaded_at = models.CharField(max_length=255, blank=True, null=True)
-    acc = models.CharField(max_length=4096)
-
-    class Meta:
-        managed = False
-        db_table = 'uploads'
-# ======= DO NOT DELETE the get_upload_path function and the Uploads class ======
-
-
 class User(AbstractUser):
     email_notification = models.BooleanField(default=True)
 
