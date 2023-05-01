@@ -1,4 +1,54 @@
-# Tutorial project for Django - AWS CI-CD CodePipeline workflow
+# UI Project for Mircobiome Analysis Platform
+
+## Setup
+### Local Development Setup
+
+#### [Install Django](https://docs.djangoproject.com/en/4.2/topics/install/)
+```sh
+python -m pip install Django
+```
+#### [Install Postgres](https://www.postgresql.org/download/)
+```sh
+brew install postgresql
+```
+#### [Install Redis](https://redis.io/docs/getting-started/installation/)
+```sh
+brew install redis
+```
+
+#### Clone Repository
+```sh
+git clone --branch ci-cd-deploy https://github.com/aikene/microbiome-project-ui.git
+```
+#### Create and Activate Virtual Environment
+```sh
+python -m venv env
+```
+```sh
+source env/bin/activate
+```
+#### Install Dependencies
+```shell
+pip install -r requirements.txt
+```
+**update may be needed in requirements.txt file to update line 3 to:
+```backports.zoneinfo==0.2.1;python_version<"3.9"```
+#### Change settings.py
+If no .env file was provided, 
+Remove anywhere  ```env('VALUE')``` is and make sure your 'Databases' dictionary in awscid/settings.py is set to use a local database
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+#### Start Application
+Run this command from main project level
+```python
+python manage.py runserver
+```
 
 GitHub branch -> AWS CodePipeline -> AWS CodeDeploy -> AWS Elastic Compute Cloud
 
