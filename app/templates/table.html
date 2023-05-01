@@ -26,13 +26,23 @@ Search | {{ username }}
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-8 px-2">
-        <p><b>Total number of records:</b> {{ num_records }} <b>Selected for Visualization:</b> <a href="#" id="runIdForVisual" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ selected_visual_records }}</a></p>
-   </div>
-   <div class="col-md-4 px-2">
-        <a href="/" class="float-right pr-3">Back</a>
-   </div>
+
+  <div class="table-stats">
+        <div class="back-btn">
+            <a href="/" class="btn btn-primary pr-3">Back</a>
+        </div>
+        <div class="table-stats-right">
+            <div class="table-stats-right-l1">
+                <div class="table-stats-right-l2">
+                    <span class="table-stats-text">Total number of records: {{ num_records }}</span>
+                </div>
+
+                <div class="table-stats-right-l2 table-stats-text">
+                    <span >Selected for Visualization:</span> <a href="#" id="runIdForVisual" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ selected_visual_records }}</a>
+                </div>
+            </div>
+        </div>
+
   </div>
 
     <div >
@@ -41,95 +51,159 @@ Search | {{ username }}
                 <thead>
                     <tr>
                         {% if order_by == 'acc' and direction == 'asc'%}
-                            <th>Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'acc' and direction == 'desc'%}
-                            <th>Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i> </a></th>
+                            <th class="table-generic-th">Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i> </a></th>
                         {% else %}
-                            <th>Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Acc<a href="{% url 'table' page=metadata.number order_by='acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'librarylayout' and direction == 'asc'%}
-                            <th>Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'librarylayout' and direction == 'desc'%}
-                            <th>Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='asc' %}?search_criteria={{ search_criteria }}"><i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='asc' %}?search_criteria={{ search_criteria }}"><i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Library Layout<a href="{% url 'table' page=metadata.number order_by='librarylayout' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'sra_study' and direction == 'asc'%}
-                            <th>SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'sra_study' and direction == 'desc'%}
-                            <th>SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">SRA Study<a href="{% url 'table' page=metadata.number order_by='sra_study' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'center_name' and direction == 'asc'%}
-                            <th>Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'center_name' and direction == 'desc'%}
-                            <th>Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Center Name<a href="{% url 'table' page=metadata.number order_by='center_name' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'experiment' and direction == 'asc'%}
-                            <th>Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'experiment' and direction == 'desc'%}
-                            <th>Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Experiment<a href="{% url 'table' page=metadata.number order_by='experiment' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'sample_acc' and direction == 'asc'%}
-                            <th>Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'sample_acc' and direction == 'desc'%}
-                            <th>Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Sample ACC<a href="{% url 'table' page=metadata.number order_by='sample_acc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'biosample' and direction == 'asc'%}
-                            <th>Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'biosample' and direction == 'desc'%}
-                            <th>Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Bio Sample<a href="{% url 'table' page=metadata.number order_by='biosample' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'organism' and direction == 'asc'%}
-                            <th>Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'organism' and direction == 'desc'%}
-                            <th>Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Organism<a href="{% url 'table' page=metadata.number order_by='organism' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'bioproject' and direction == 'asc'%}
-                            <th>Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'bioproject' and direction == 'desc'%}
-                            <th>Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='asc' %}?search_criteria={{ search_criteria }}"><i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='asc' %}?search_criteria={{ search_criteria }}"><i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Bio Project<a href="{% url 'table' page=metadata.number order_by='bioproject' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'geo_loc_name_country_calc' and direction == 'asc'%}
-                            <th>Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'geo_loc_name_country_calc' and direction == 'desc'%}
-                            <th>Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Country<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
                         {% if order_by == 'geo_loc_name_country_continent_calc' and direction == 'asc'%}
-                            <th>Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                            <th class="table-generic-th">Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
                         {% elif order_by == 'geo_loc_name_country_continent_calc' and direction == 'desc'%}
-                            <th>Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                            <th class="table-generic-th">Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
                         {% else %}
-                            <th>Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                            <th class="table-generic-th">Continent<a href="{% url 'table' page=metadata.number order_by='geo_loc_name_country_continent_calc' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
                         {% endif %}
 
-                        <th>Process</th>
-                        <th>Include in Visualization</th>
+                        {% if order_by == 'gender' and direction == 'asc'%}
+                            <th class="table-generic-th">Sex<a href="{% url 'table' page=metadata.number order_by='gender' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'gender' and direction == 'desc'%}
+                            <th class="table-generic-th">Sex<a href="{% url 'table' page=metadata.number order_by='gender' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Sex<a href="{% url 'table' page=metadata.number order_by='gender' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'breed_sam' and direction == 'asc'%}
+                            <th class="table-generic-th">Breed Sample<a href="{% url 'table' page=metadata.number order_by='breed_sam' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'breed_sam' and direction == 'desc'%}
+                            <th class="table-generic-th">Breed Sample<a href="{% url 'table' page=metadata.number order_by='breed_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Breed Sample<a href="{% url 'table' page=metadata.number order_by='breed_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'cultivar_sam' and direction == 'asc'%}
+                            <th class="table-generic-th">Cultivar Sample<a href="{% url 'table' page=metadata.number order_by='cultivar_sam' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'cultivar_sam' and direction == 'desc'%}
+                            <th class="table-generic-th">Cultivar Sample<a href="{% url 'table' page=metadata.number order_by='cultivar_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Cultivar Sample<a href="{% url 'table' page=metadata.number order_by='cultivar_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'ecotype_sam' and direction == 'asc'%}
+                            <th class="table-generic-th">Ecotype Sample<a href="{% url 'table' page=metadata.number order_by='ecotype_sam' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'ecotype_sam' and direction == 'desc'%}
+                            <th class="table-generic-th">Ecotype Sample<a href="{% url 'table' page=metadata.number order_by='ecotype_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Ecotype Sample<a href="{% url 'table' page=metadata.number order_by='ecotype_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'isolate_sam' and direction == 'asc'%}
+                            <th class="table-generic-th">Isolate Sample<a href="{% url 'table' page=metadata.number order_by='isolate_sam' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'isolate_sam' and direction == 'desc'%}
+                            <th class="table-generic-th">Isolate Sample<a href="{% url 'table' page=metadata.number order_by='isolate_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Isolate Sample<a href="{% url 'table' page=metadata.number order_by='isolate_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'libraryselection' and direction == 'asc'%}
+                            <th class="table-generic-th">Library Selection<a href="{% url 'table' page=metadata.number order_by='libraryselection' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'libraryselection' and direction == 'desc'%}
+                            <th class="table-generic-th">Library Selection<a href="{% url 'table' page=metadata.number order_by='libraryselection' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Library Selection<a href="{% url 'table' page=metadata.number order_by='libraryselection' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'strain_sam' and direction == 'asc'%}
+                            <th class="table-generic-th">Strain Sample<a href="{% url 'table' page=metadata.number order_by='strain_sam' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'strain_sam' and direction == 'desc'%}
+                            <th class="table-generic-th">Strain Sample<a href="{% url 'table' page=metadata.number order_by='strain_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Strain Sample<a href="{% url 'table' page=metadata.number order_by='strain_sam' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        {% if order_by == 'mbytes' and direction == 'asc'%}
+                            <th class="table-generic-th">Size (MB)<a href="{% url 'table' page=metadata.number order_by='mbytes' direction='desc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-up"></i> </a></th>
+                        {% elif order_by == 'mbytes' and direction == 'desc'%}
+                            <th class="table-generic-th">Size (MB)<a href="{% url 'table' page=metadata.number order_by='mbytes' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort-down"></i></span> </a></th>
+                        {% else %}
+                            <th class="table-generic-th">Size (MB)<a href="{% url 'table' page=metadata.number order_by='mbytes' direction='asc' %}?search_criteria={{ search_criteria }}"> <i class="fa-solid fa-sort"></i> </a></th>
+                        {% endif %}
+
+                        <th class="table-generic-th">Process</th>
+                        <th class="table-generic-th">Include in Visualization</th>
 
                     </tr>
                 </thead>
@@ -147,6 +221,14 @@ Search | {{ username }}
                             <td class="table-generic-td">{{ single_metadata.bioproject }}</td>
                             <td class="table-generic-td">{{ single_metadata.geo_loc_name_country_calc }}</td>
                             <td class="table-generic-td">{{ single_metadata.geo_loc_name_country_continent_calc }}</td>
+                            <td class="table-generic-td">{{ single_metadata.gender }}</td>
+                            <td class="table-generic-td">{{ single_metadata.breed_sam }}</td>
+                            <td class="table-generic-td">{{ single_metadata.cultivar_sam }}</td>
+                            <td class="table-generic-td">{{ single_metadata.ecotype_sam }}</td>
+                            <td class="table-generic-td">{{ single_metadata.isolate_sam }}</td>
+                            <td class="table-generic-td">{{ single_metadata.libraryselection }}</td>
+                            <td class="table-generic-td">{{ single_metadata.strain_sam }}</td>
+                            <td class="table-generic-td">{{ single_metadata.mbytes }}</td>
 
                             {% comment %} Add button {% endcomment %}
                             {% if single_metadata.acc in completed_accs %}
@@ -158,7 +240,7 @@ Search | {{ username }}
                             {% elif single_metadata.acc in errored_accs %}
                                 <td id="lbl_{{ single_metadata.acc }}"><span class="badge badge-secondary">Unable to process</span></td>
                             {% else %}
-                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" class="btn btn-primary" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Process</button></td>
+                                <td id="lbl_{{ single_metadata.acc }}"><button type="button" class="btn btn-primary btn-sm" onclick="callDataCollectionAPI('{{ single_metadata.acc }}');">Process</button></td>
                             {% endif %}
 
                             {% comment %} Checkbox {% endcomment %}

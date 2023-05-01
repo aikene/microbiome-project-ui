@@ -193,15 +193,15 @@ class EcotypeSample(models.Model):
 
 
 class IsolateSample(models.Model):
-    iosolate_sam = models.CharField(max_length=255, primary_key=True)
+    isolate_sam = models.CharField(max_length=255, primary_key=True)
     count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'iosolate_sam_view'
+        db_table = 'isolate_sam_view'
 
     def __str__(self):
-        return self.iosolate_sam or ''
+        return self.isolate_sam or ''
 
 
 class StrainSample(models.Model):
