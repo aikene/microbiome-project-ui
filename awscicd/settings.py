@@ -196,14 +196,25 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env('DB_NAME'),
+#         'USER': env('DB_USER'),
+#         'PASSWORD': env('DB_PASSWORD'),
+#         'HOST': env('DB_HOST'),
+#         'PORT': env('DB_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': 'NcbiSraPostgress',
+        'USER': 'postgres',
+        'PASSWORD': 'ThisIsAMasterPassword',
+        'HOST': 'ncbi-sra-db-restore.cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
+        'PORT': 5432,
     }
 }
 
@@ -241,6 +252,6 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
 
-S3_PRIVATE_STUDIES_PATH = '/home/ubuntu/qiime2storage/studies/private'
-
+# S3_PRIVATE_STUDIES_PATH = '/home/ubuntu/qiime2storage/studies/private'
+S3_PRIVATE_STUDIES_PATH = '/Users/burak/Desktop/temp2/studies/private'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
