@@ -2,7 +2,7 @@ from django import forms
 from django_select2 import forms as s2forms
 
 from . import models
-from .common_models import Distinct_Library_Layout, Distinct_SRA, Distinct_Sex, Distinct_Library_Selection, \
+from .common_models import Distinct_Library_Layout, Distinct_SRA, Distinct_Gender, Distinct_Library_Selection, \
     Distinct_Assay_Type, Center_Name, Experiment_Name, Sample_Acc, Biosample, Organism, Bioproject, Country, Continent, \
     BreedSample, CultivarSample, EcotypeSample, IsolateSample, StrainSample
 
@@ -99,7 +99,7 @@ class ContinentSelectionWidget(s2forms.ModelSelect2MultipleWidget):
 
 
 class SexSelectionWidget(s2forms.ModelSelect2MultipleWidget):
-    queryset = Distinct_Sex.objects.all()
+    queryset = Distinct_Gender.objects.all()
     search_fields = [
         "gender__icontains"
     ]
@@ -214,7 +214,7 @@ class MetadataForm(forms.ModelForm):
     gender = forms.ModelMultipleChoiceField(
         label='Sex',
         required=False,
-        queryset=Distinct_Sex.objects.all(),
+        queryset=Distinct_Gender.objects.all(),
         widget=SexSelectionWidget(attrs={'data-placeholder': '"male", "female" are only options',
                                          "data-minimum-input-length": 0}),
     )
