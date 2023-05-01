@@ -262,7 +262,12 @@ Profile | {{ username }}
 
                                 {% comment %} Delete Button {% endcomment %}
                                 <td>
-                                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ single_metadata.acc }}">Delete</button>
+                                    {% if single_metadata.acc in completed_accs or single_metadata.acc in errored_accs %}
+                                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ single_metadata.acc }}">Delete</button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="{{ single_metadata.acc }}" disabled>Delete</button>
+                                    {% endif %}
+
                                     <div class="hidden-elm confirm-btns-{{ single_metadata.acc }}">
                                         <div>Are you sure?</div>
                                         <button type="button" class="btn btn-danger btn-sm delete-confirm-btn" data-id="{{ single_metadata.acc }}">Yes</button>

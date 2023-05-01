@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django_tables2',
     'crispy_forms',
     'django_filters',
-    'django_select2'
+    'django_select2',
+    'crispy_bootstrap4'
 ]
 
 MIDDLEWARE = [
@@ -241,3 +242,5 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 MAIL_DEBUG = 1
 
 S3_PRIVATE_STUDIES_PATH = '/home/ubuntu/qiime2storage/studies/private'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

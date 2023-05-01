@@ -169,6 +169,12 @@ def get_metadata_from_csv(csv_file):
                 success = False
                 return success, msg, metadata_records
 
+            # Check run_id format
+            if not run_id.isalnum():
+                msg = f'{run_id} is not a valid run id. Run id must consist of alphanumeric characters only.'
+                success = False
+                return success, msg, metadata_records
+
             if run_id in run_ids:
                 msg = 'Invalid metadata! Duplicate run ids found.'
                 success = False

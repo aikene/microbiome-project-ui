@@ -8,14 +8,14 @@ from .common_models import Distinct_Library_Layout, Distinct_SRA, Distinct_Sex, 
 
 
 class LibraryLayoutWidget(s2forms.Select2MultipleWidget):
-    queryset = Distinct_Library_Layout.objects.all()
+    queryset = Distinct_Library_Layout.objects.all().order_by('librarylayout')
     search_fields = [
         "librarylayout__icontains"
     ]
 
 
 class SRAStudyWidget(s2forms.ModelSelect2MultipleWidget):
-    queryset = Distinct_SRA.objects.all()
+    queryset = Distinct_SRA.objects.all().order_by('sra_study')
     search_fields = [
         "sra_study__icontains"
     ]
@@ -29,21 +29,21 @@ class LibrarySelectionWidget(s2forms.ModelSelect2MultipleWidget):
 
 
 class CenterNameSelectionWidget(s2forms.ModelSelect2MultipleWidget):
-    queryset = Center_Name.objects.all()
+    queryset = Center_Name.objects.all().order_by('center_name')
     search_fields = [
         "center_name__icontains"
     ]
 
 
 class AccSelectionWidget(s2forms.ModelSelect2MultipleWidget):
-    queryset = models.Metadata.objects.all()
+    queryset = models.Metadata.objects.all().order_by('acc')
     search_fields = [
         "acc__icontains"
     ]
 
 
 class ExperimentSelectionWidget(s2forms.ModelSelect2MultipleWidget):
-    queryset = Experiment_Name.objects.all()
+    queryset = Experiment_Name.objects.all().order_by('experiment')
     search_fields = [
         "experiment__icontains"
     ]
@@ -129,7 +129,7 @@ class EcotypeSamWidget(s2forms.ModelSelect2MultipleWidget):
 class IsolateSamWidget(s2forms.ModelSelect2MultipleWidget):
     queryset = IsolateSample.objects.all()
     search_fields = [
-        "iosolate_sam__icontains"
+        "isolate_sam__icontains"
     ]
 
 
@@ -239,7 +239,7 @@ class MetadataForm(forms.ModelForm):
         widget=EcotypeSamWidget(attrs={'data-placeholder': 'unknown is the most common option',
                                        "data-minimum-input-length": 0}),
     )
-    iosolate_sam = forms.ModelMultipleChoiceField(
+    isolate_sam = forms.ModelMultipleChoiceField(
         label='Isolate Sample',
         required=False,
         queryset=IsolateSample.objects.all(),
@@ -261,9 +261,29 @@ class MetadataForm(forms.ModelForm):
                                             "data-minimum-input-length": 0}),
     )
 
+    only_processed_studies = forms.BooleanField(
+        label='Include only processed studies',
+        required=False,
+        label_suffix="",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
+    include_sra_studies = forms.BooleanField(
+        label='Include SRA studies',
+        required=False,
+        initial=True,
+        label_suffix="",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
+    include_private_studies = forms.BooleanField(
+        label='Include my private studies',
+        required=False,
+        initial=True,
+        label_suffix="",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
     class Meta:
         model = models.Metadata
         fields = ('librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
                   'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc',
-                  'gender', 'breed_sam', 'cultivar_sam', 'ecotype_sam', 'iosolate_sam', 'libraryselection',
-                  'strain_sam')
+                  'gender', 'breed_sam', 'cultivar_sam', 'ecotype_sam', 'isolate_sam', 'libraryselection',
+                  'strain_sam', 'only_processed_studies', 'include_sra_studies', 'include_private_studies')

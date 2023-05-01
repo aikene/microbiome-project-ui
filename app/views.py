@@ -610,7 +610,7 @@ def search(request, page=1, order_by='acc', direction='asc'):
     if request.method == 'POST':
         metadata_fields = ['librarylayout', 'sra_study', 'center_name', 'experiment', 'sample_acc', 'biosample',
                            'organism', 'bioproject', 'geo_loc_name_country_calc', 'geo_loc_name_country_continent_calc',
-                           'ecotype_sam', 'cultivar_sam', 'breed_sam', 'strain_sam', 'iosolate_sam', 'race_ethnicity',
+                           'ecotype_sam', 'cultivar_sam', 'breed_sam', 'strain_sam', 'isolate_sam', 'race_ethnicity',
                            'gender', 'libraryselection']
 
         username = None
@@ -633,14 +633,40 @@ def search(request, page=1, order_by='acc', direction='asc'):
             queries = [Q(**{metadata_field: f}) for f in filter_values]
             list_of_query_lists.append(queries)
 
-        if username:
-            queries = [Q(**{'user_id': username}), Q(user_id__isnull=True)]
-        else:
-            queries = [Q(user_id__isnull=True)]
+        only_processed_studies = request.POST.get('only_processed_studies', False)
+        include_sra_studies = request.POST.get('include_sra_studies', False)
+        include_private_studies = request.POST.get('include_private_studies', False)
 
-        list_of_query_lists.append(queries)
-        main_query = build_query(list_of_query_lists)
-        query_set_metadata = Metadata.objects.filter(main_query)
+        search_criteria['only_processed_studies'] = True if only_processed_studies else False
+        search_criteria['include_sra_studies'] = True if include_sra_studies else False
+        search_criteria['include_private_studies'] = True if include_private_studies else False
+
+        queued_accs, in_progress_accs, completed_accs, errored_accs = get_status_sets()
+
+        if username:
+            if include_sra_studies and include_private_studies:
+                user_id_queries = [Q(user_id__isnull=True), Q(**{'user_id': username})]
+            elif include_sra_studies and not include_private_studies:
+                user_id_queries = [Q(user_id__isnull=True)]
+            elif include_private_studies and not include_sra_studies:
+                user_id_queries = [Q(**{'user_id': username})]
+            else:
+                user_id_queries = []
+        else:
+            user_id_queries = [Q(user_id__isnull=True)]
+
+        if (not user_id_queries) or (only_processed_studies and not completed_accs):
+            query_set_metadata = Metadata.objects.none()
+        else:
+            if only_processed_studies:
+                acc_queries = []
+                for completed_acc in completed_accs:
+                    acc_queries.append(Q(**{'acc': completed_acc}))
+                list_of_query_lists.append(acc_queries)
+
+            list_of_query_lists.append(user_id_queries)
+            main_query = build_query(list_of_query_lists)
+            query_set_metadata = Metadata.objects.filter(main_query)
 
         num_records = query_set_metadata.count()
         clean_form = json.dumps(search_criteria, default=str)
@@ -649,13 +675,10 @@ def search(request, page=1, order_by='acc', direction='asc'):
         paginator = Paginator(query_set_metadata.order_by(order_by), per_page=20)
         page_object = paginator.page(page)
 
-        queued_accs, in_progress_accs, completed_accs, errored_accs = get_status_sets()
-
         # Add record in history table if there is a logged-in user
         if username:
             history = History(user_id=username,
                               time_stamp=datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
-                              assay_type=utils.stringify_list(search_criteria.get('assay_type', None)),
                               bioproject=utils.stringify_list(search_criteria.get('bioproject', None)),
                               biosample=utils.stringify_list(search_criteria.get('biosample', None)),
                               breed_sam=utils.stringify_list(search_criteria.get('breed_sam', None)),
@@ -663,8 +686,8 @@ def search(request, page=1, order_by='acc', direction='asc'):
                               country=utils.stringify_list(search_criteria.get('geo_loc_name_country_calc', None)),
                               continent=utils.stringify_list(search_criteria.get('geo_loc_name_country_continent_calc', None)),
                               cultivar_sam=utils.stringify_list(search_criteria.get('cultivar_sam', None)),
-                              ecotype_same=utils.stringify_list(search_criteria.get('ecotype_same', None)),
-                              experiment_name=utils.stringify_list(search_criteria.get('experiment', None)),
+                              ecotype_sam=utils.stringify_list(search_criteria.get('ecotype_sam', None)),
+                              experiment=utils.stringify_list(search_criteria.get('experiment', None)),
                               gender=utils.stringify_list(search_criteria.get('gender', None)),
                               isolate_sam=utils.stringify_list(search_criteria.get('isolate_sam', None)),
                               library_layout=utils.stringify_list(search_criteria.get('librarylayout', None)),
@@ -672,7 +695,11 @@ def search(request, page=1, order_by='acc', direction='asc'):
                               organism=utils.stringify_list(search_criteria.get('organism', None)),
                               sample_acc=utils.stringify_list(search_criteria.get('sample_acc', None)),
                               sra_study=utils.stringify_list(search_criteria.get('sra_study', None)),
-                              strain_sam=utils.stringify_list(search_criteria.get('strain_sam', None)))
+                              strain_sam=utils.stringify_list(search_criteria.get('strain_sam', None)),
+                              only_processed_studies=search_criteria.get('only_processed_studies', False),
+                              include_sra_studies=search_criteria.get('include_sra_studies', True),
+                              include_private_studies=search_criteria.get('include_private_studies', False))
+
             history.save()
 
         sel_run_ids_visual = request.session.get(session_key_visual, [])
@@ -707,7 +734,7 @@ def search(request, page=1, order_by='acc', direction='asc'):
         list_of_query_lists = []
 
         for metadata_field, filter_values in search_criteria.items():
-            if not filter_values:
+            if not filter_values or not isinstance(filter_values, list):
                 continue
 
             search_criteria[metadata_field] = filter_values
@@ -715,21 +742,41 @@ def search(request, page=1, order_by='acc', direction='asc'):
             queries = [Q(**{metadata_field: f}) for f in filter_values]
             list_of_query_lists.append(queries)
 
-        if username:
-            queries = [Q(**{'user_id': username}), Q(user_id__isnull=True)]
-        else:
-            queries = [Q(user_id__isnull=True)]
+        only_processed_studies = search_criteria.get('only_processed_studies', False)
+        include_sra_studies = search_criteria.get('include_sra_studies', True)
+        include_private_studies = search_criteria.get('include_private_studies', False)
 
-        list_of_query_lists.append(queries)
-        main_query = build_query(list_of_query_lists)
-        query_set_metadata = Metadata.objects.filter(main_query)
+        queued_accs, in_progress_accs, completed_accs, errored_accs = get_status_sets()
+
+        if username:
+            if include_sra_studies and include_private_studies:
+                user_id_queries = [Q(user_id__isnull=True), Q(**{'user_id': username})]
+            elif include_sra_studies and not include_private_studies:
+                user_id_queries = [Q(user_id__isnull=True)]
+            elif include_private_studies and not include_sra_studies:
+                user_id_queries = [Q(**{'user_id': username})]
+            else:
+                user_id_queries = []
+        else:
+            user_id_queries = [Q(user_id__isnull=True)]
+
+        if (not user_id_queries) or (only_processed_studies and not completed_accs):
+            query_set_metadata = Metadata.objects.none()
+        else:
+            if only_processed_studies:
+                acc_queries = []
+                for completed_acc in completed_accs:
+                    acc_queries.append(Q(**{'acc': completed_acc}))
+                list_of_query_lists.append(acc_queries)
+
+            list_of_query_lists.append(user_id_queries)
+            main_query = build_query(list_of_query_lists)
+            query_set_metadata = Metadata.objects.filter(main_query)
 
         num_records = query_set_metadata.count()
 
         paginator = Paginator(query_set_metadata.order_by(ordering), per_page=20)
         page_object = paginator.page(page)
-
-        queued_accs, in_progress_accs, completed_accs, errored_accs = get_status_sets()
 
         sel_run_ids_visual = request.session.get(session_key_visual, [])
 
@@ -770,6 +817,13 @@ def populate_home_page(request, search_id):
     form.fields['bioproject'].initial = ''
     form.fields['geo_loc_name_country_calc'].initial = ''
     form.fields['geo_loc_name_country_continent_calc'].initial = ''
+    form.fields['gender'].initial = ''
+    form.fields['breed_sam'].initial = ''
+    form.fields['cultivar_sam'].initial = ''
+    form.fields['ecotype_sam'].initial = ''
+    form.fields['isolate_sam'].initial = ''
+    form.fields['libraryselection'].initial = ''
+    form.fields['strain_sam'].initial = ''
 
     # Populate the form
     if search_record.library_layout is not None:
@@ -781,8 +835,8 @@ def populate_home_page(request, search_id):
     if search_record.center_name is not None:
         form.fields['center_name'].initial = search_record.center_name.split(',')
 
-    if search_record.experiment_name is not None:
-        form.fields['experiment'].initial = search_record.experiment_name.split(',')
+    if search_record.experiment is not None:
+        form.fields['experiment'].initial = search_record.experiment.split(',')
 
     if search_record.sample_acc is not None:
         form.fields['sample_acc'].initial = search_record.sample_acc.split(',')
@@ -801,6 +855,31 @@ def populate_home_page(request, search_id):
 
     if search_record.continent is not None:
         form.fields['geo_loc_name_country_continent_calc'].initial = search_record.continent.split(',')
+
+    if search_record.gender is not None:
+        form.fields['gender'].initial = search_record.gender.split(',')
+
+    if search_record.breed_sam is not None:
+        form.fields['breed_sam'].initial = search_record.breed_sam.split(',')
+
+    if search_record.cultivar_sam is not None:
+        form.fields['cultivar_sam'].initial = search_record.cultivar_sam.split(',')
+
+    if search_record.ecotype_sam is not None:
+        form.fields['ecotype_sam'].initial = search_record.ecotype_sam.split(',')
+
+    if search_record.isolate_sam is not None:
+        form.fields['isolate_sam'].initial = search_record.isolate_sam.split(',')
+
+    if search_record.library_selection is not None:
+        form.fields['libraryselection'].initial = search_record.library_selection.split(',')
+
+    if search_record.strain_sam is not None:
+        form.fields['strain_sam'].initial = search_record.strain_sam.split(',')
+
+    form.fields['only_processed_studies'].initial = search_record.only_processed_studies
+    form.fields['include_sra_studies'].initial = search_record.include_sra_studies
+    form.fields['include_private_studies'].initial = search_record.include_private_studies
 
     return render(request, "home.html", {"form": form})
 
@@ -894,7 +973,7 @@ def upload(request):
             run_id = metadata_record.run_id
             logger.info(f"Updating the metadata table for {run_id}.")
             current_run = metadata_record.contents
-            library_layout = current_run.get('Library Layout', '')
+            library_layout = current_run.get('Library Layout', '').upper()
             metadata_user = Metadata(user_id=username,
                                      acc=run_id,
                                      librarylayout=library_layout,
@@ -906,32 +985,29 @@ def upload(request):
                                      geo_loc_name_country_calc=current_run.get('Country', ''),
                                      geo_loc_name_country_continent_calc=current_run.get('Continent', ''),
                                      sample_name=current_run.get('Sample Name', ''),
-                                     # sample_title=current_run.get('Sample Title', ''),
-                                     # sample_type=current_run.get('Sample Type', ''),
+                                     sample_type_sam=current_run.get('Sample Type', ''),
                                      breed_sam=current_run.get('Breed Sample', ''),
                                      cultivar_sam=current_run.get('Cultivar Sample', ''),
                                      ecotype_sam=current_run.get('Ecotype Sample', ''),
-                                     iosolate_sam=current_run.get('Isolate Sample', ''),
+                                     isolate_sam=current_run.get('Isolate Sample', ''),
                                      libraryselection=current_run.get('Library Selection', ''),
                                      strain_sam=current_run.get('Strain Sample', ''),
-                                     # strain=current_run.get('Strain', ''),
-                                     # age=current_run.get('Age', ''),
-                                     # dev_stage=current_run.get('Dev Stage', ''),
+                                     age_sam=current_run.get('Age', ''),
+                                     dev_stage_sam=current_run.get('Dev Stage', ''),
                                      gender=current_run.get('Gender', ''),
-                                     # tissue=current_run.get('Tissue', ''),
-                                     # birth_location=current_run.get('Birth Location', ''),
-                                     # cell_type=current_run.get('Cell Type', ''),
-                                     # collection_date=current_run.get('Collection Date', ''),
-                                     # disease=current_run.get('Disease', ''),
-                                     # disease_stage=current_run.get('Disease Stage', ''),
-                                     # genotype=current_run.get('Genotype', ''),
-                                     # health_state=current_run.get('Health State', ''),
-                                     # isolation_source=current_run.get('Isolation Source', ''),
-                                     # treatment=current_run.get('Treatment', ''),
-                                     # description=current_run.get('Description', '')
+                                     tissue_sam=current_run.get('Tissue', ''),
+                                     birth_location_sam=current_run.get('Birth Location', ''),
+                                     cell_type_sam=current_run.get('Cell Type', ''),
+                                     collection_date_sam=current_run.get('Collection Date', ''),
+                                     disease_sam=current_run.get('Disease', ''),
+                                     disease_stage_sam=current_run.get('Disease Stage', ''),
+                                     genotype_sam=current_run.get('Genotype', ''),
+                                     health_state_sam=current_run.get('Health State', ''),
+                                     isolation_source_sam=current_run.get('Isolation Source', ''),
+                                     treatment_sam=current_run.get('Treatment', ''),
+                                     description_sam=current_run.get('Description', ''),
                                      created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                      )
-
 
             if library_layout.upper() == 'SINGLE':
                 try:
