@@ -360,7 +360,7 @@ def login_view(request):
             return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "login.html", {
-                "message": "Invalid username and/or password."
+                "error_message": "Invalid username and/or password."
             })
     else:
         return render(request, "login.html")
@@ -462,7 +462,7 @@ def status(request, username, page=1):
 
 @login_required(login_url="login")
 def history(request, username, page=1):
-    search_history_list = History.objects.filter(user_id=username)
+    search_history_list = History.objects.filter(user_id=username).order_by('-search_id')
     paginator = Paginator(search_history_list, per_page=20)
     page_object = paginator.page(page)
 
@@ -775,7 +775,7 @@ def search(request, page=1, order_by='acc', direction='asc'):
 
         num_records = query_set_metadata.count()
 
-        paginator = Paginator(query_set_metadata.order_by(ordering), per_page=20)
+        paginator = Paginator(query_set_metadata.order_by(ordering, 'acc'), per_page=20)
         page_object = paginator.page(page)
 
         sel_run_ids_visual = request.session.get(session_key_visual, [])
