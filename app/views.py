@@ -131,6 +131,7 @@ def reset_runId_for_visual(request):
     json_data = json.dumps(request.session.get(session_key_visual, []))
     return HttpResponse(json_data, content_type='application/json')
 
+
 # API end point to update selected run ID for visualization (api/visualization/{add}/{runId})
 def update_runId_for_visual(request, runId, add = 1):
     if isinstance(add, int) and isinstance(runId, str):
@@ -378,13 +379,29 @@ def register(request):
         first_name = request.POST["first-name"]
         last_name = request.POST["last-name"]
 
+        # Check if username is blank
+        if username == '':
+            return render(request, "register.html", {"error_message": [f"Please provide a username."]})
+
+        # Check if email is blank
+        if email == '':
+            return render(request, "register.html", {"error_message": [f"Please provide an email."]})
+
+        # Check if first_name is blank
+        if first_name == '':
+            return render(request, "register.html", {"error_message": [f"Please provide a first name."]})
+
+        # Check if last_name is blank
+        if last_name == '':
+            return render(request, "register.html", {"error_message": [f"Please provide a last name."]})
+
         # Check if the given email is already registered
         if User.objects.filter(email__iexact=email).count() > 0:
             return render(request, "register.html", {"error_message": [f"{email} is already registered."]})
 
         # Check if the given username is already registered
         if User.objects.filter(username__iexact=username).count() > 0:
-            return render(request, "register.html", {"error_message": [f"{username} is already taken."]})
+            return render(request, "register.html", {"error_message": [f"Username {username} is already taken."]})
 
         # Ensure password matches confirmation
         password = request.POST["password"]

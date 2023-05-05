@@ -30,14 +30,20 @@
                     </div>
                 {% endif %}
             {% else %}
-                {{ field|as_crispy_field }}
+                <div class="form-field-inline">
+{#                    {{ field.label_tag }}#}
+                    <div class="form-field-inline-label">{{ field.label_tag }}</div>
+                    {{ field}}
+                </div>
+
+{#                {{ field|as_crispy_field }}#}
             {% endif %}
 
         {% endfor %}
 {#        {{ form.as_p }}#}
 
         <div class="home-pg-btns">
-            <button class="btn btn-primary btn-lg">Search</button>
+            <button id="search" class="btn btn-primary btn-lg">Search</button>
             <button id="clear-filters" type="Reset" class="btn btn-secondary btn-lg" onclick="clearSelect2();">
         Reset</button>
         </div>

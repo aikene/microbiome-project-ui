@@ -13,14 +13,14 @@
 
                         {% if error_message %}
                             {% for msg in error_message %}
-                                <div class="alert alert-danger text-center">{{ msg }}</div>
+                                <div class="alert alert-danger text-center errormsg">{{ msg }}</div>
                             {% endfor %}
                         {% endif %}
 
                         {% if success_message %}
                             <div class="alert alert-success text-center">
                                 {% for msg in success_message %}
-                                    <div>{{ msg }}</div>
+                                    <div class="successmsg">{{ msg }}</div>
                                 {% endfor %}
                             </div>
                         {% endif %}
