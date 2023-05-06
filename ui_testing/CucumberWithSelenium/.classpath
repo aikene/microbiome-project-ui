@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cobertura-2.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-core-1.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-html-0.2.6.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-java-1.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-junit-1.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-jvm-deps-1.0.5.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/cucumber-reporting-5.7.2.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/gherkin-2.12.2.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/hamcrest-2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/junit-4.13.2.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/junit-jupiter-api-5.9.0.jar"/>
+	<classpathentry kind="lib" path="/Users/burak/Harvard/02_Courses/12_CSCI_E599/UI_Testing/Project2/JARs/selenium-server-4.6.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

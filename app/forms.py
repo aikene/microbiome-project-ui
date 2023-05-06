@@ -146,7 +146,7 @@ class MetadataForm(forms.ModelForm):
         required=False,
         queryset=Distinct_Library_Layout.objects.all(),
         widget=LibraryLayoutWidget(attrs={'data-placeholder': '"Single" and "Paired" are only options',
-                                          "data-minimum-input-length": 0}),
+                                          "data-minimum-input-length": 0, 'name': 'librarylayout'}),
     )
     sra_study = s2forms.forms.ModelMultipleChoiceField(
         label='SRA Study',
