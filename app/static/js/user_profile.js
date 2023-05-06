@@ -10,6 +10,37 @@ document.addEventListener('DOMContentLoaded', function() {
         setEmailNotification(this.checked);
     })
 
+    // Add event listener to all delete buttons
+    document.querySelectorAll('.delete-btn').forEach(deleteBtn => {
+        deleteBtn.addEventListener('click', function() {
+            const runID = deleteBtn.dataset.id;
+            const confirmBtnSpan = document.querySelector(`.confirm-btns-${runID}`);
+            deleteBtn.classList.add('hidden-elm');
+            confirmBtnSpan.classList.remove('hidden-elm');
+        });
+    });
+
+    // Add event listener to all cancel buttons
+    document.querySelectorAll('.cancel-btn').forEach(cancelBtn => {
+        cancelBtn.addEventListener('click', function() {
+            const runID = cancelBtn.dataset.id;
+
+            const confirmBtnSpan = document.querySelector(`.confirm-btns-${runID}`);
+            confirmBtnSpan.classList.add('hidden-elm');
+
+            const deleteBtn = document.querySelector(`.delete-btn[data-id="${runID}"]`);
+            deleteBtn.classList.remove('hidden-elm');
+        });
+    });
+
+    // Add event listener to all delete buttons
+    document.querySelectorAll('.delete-confirm-btn').forEach(deleteBtn => {
+        deleteBtn.addEventListener('click', function() {
+            deleteUploadedStudy(deleteBtn);
+            return false;
+        });
+    });
+
     // Hide all edit forms and add event listener to all edit forms
     document.querySelectorAll("[class^='edit-form']").forEach(form => {
         // Initially hide the edit form
@@ -221,80 +252,52 @@ function switchToEditView(showEditForm, elm) {
     }
 }
 
-document.addEventListener('click', function (e) {
-    try {
-        // allows for elements inside TH
-        function findElementRecursive(element, tag) {
-            return element.nodeName === tag ? element : findElementRecursive(element.parentNode, tag);
-        }
-        var descending_th_class_1 = 'dir-d';
-        var ascending_th_class_1 = 'dir-u';
-        var ascending_table_sort_class = 'asc';
-        var table_class_name = 'sortable';
-        var alt_sort_1 = e.shiftKey || e.altKey;
-        var element = findElementRecursive(e.target, 'TH');
-        var tr = findElementRecursive(element, 'TR');
-        var table = findElementRecursive(tr, 'TABLE');
-        function reClassify(element, dir) {
-            element.classList.remove(descending_th_class_1);
-            element.classList.remove(ascending_th_class_1);
-            if (dir)
-                element.classList.add(dir);
-        }
-        function getValue(element) {
-            var value = (alt_sort_1 && element.dataset.sortAlt) || element.dataset.sort || element.textContent;
-            return value;
-        }
-        if (table.classList.contains(table_class_name)) {
-            var column_index_1;
-            var nodes = tr.cells;
-            var tiebreaker_1 = parseInt(element.dataset.sortTbr);
-            // Reset thead cells and get column index
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i] === element) {
-                    column_index_1 = parseInt(element.dataset.sortCol) || i;
-                }
-                else {
-                    reClassify(nodes[i], '');
-                }
-            }
-            var dir = descending_th_class_1;
-            // Check if we're sorting ascending or descending
-            if (element.classList.contains(descending_th_class_1) ||
-                (table.classList.contains(ascending_table_sort_class) && !element.classList.contains(ascending_th_class_1))) {
-                dir = ascending_th_class_1;
-            }
-            // Update the `th` class accordingly
-            reClassify(element, dir);
-            var reverse_1 = dir === ascending_th_class_1;
-            var compare_1 = function (a, b, index) {
-                var x = getValue((reverse_1 ? a : b).cells[index]);
-                var y = getValue((reverse_1 ? b : a).cells[index]);
-                var temp = parseFloat(x) - parseFloat(y);
-                var bool = isNaN(temp) ? x.localeCompare(y) : temp;
-                return bool;
-            };
-            // loop through all tbodies and sort them
-            for (var i = 0; i < table.tBodies.length; i++) {
-                var org_tbody = table.tBodies[i];
-                // Put the array rows in an array, so we can sort them...
-                var rows = [].slice.call(org_tbody.rows, 0);
-                // Sort them using Array.prototype.sort()
-                rows.sort(function (a, b) {
-                    var bool = compare_1(a, b, column_index_1);
-                    return bool === 0 && !isNaN(tiebreaker_1) ? compare_1(a, b, tiebreaker_1) : bool;
-                });
-                // Make an empty clone
-                var clone_tbody = org_tbody.cloneNode();
-                // Put the sorted rows inside the clone
-                clone_tbody.append.apply(clone_tbody, rows);
-                // And finally replace the unsorted tbody with the sorted one
-                table.replaceChild(clone_tbody, org_tbody);
-            }
-        }
-    }
-    catch (error) {
-        // console.log(error)
-    }
-});
 
+function deleteUploadedStudy(deleteBtn) {
+    /**
+     * Sends a PUT request to remove any the uploaded study
+     */
+
+    // Get the data-id to identify the primary key of the object
+    const runID = deleteBtn.dataset.id;
+
+    // Get the CSRF token
+    const token = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    // Send put request to remove the item
+    fetch(`/delete_uploaded_study/${runID}/`, {
+        method: 'PUT',
+        headers: {"X-CSRFToken": token}
+    })
+        .then(response => response.json())
+        .then(result => {
+            // Get the relevant div
+            const msgDiv = document.querySelector(`.page-msg`);
+
+            // Update the content
+            if (result.success) {
+                msgDiv.classList.remove('alert-danger')
+                msgDiv.classList.add('alert-success');
+            } else {
+                msgDiv.classList.remove('alert-success')
+                msgDiv.classList.add('alert-danger');
+            }
+
+            const msg = result.message;
+            msgDiv.innerHTML = `${msg}`;
+            msgDiv.classList.remove('hidden-msg');
+
+            // Get the div element
+            const containerClass = 'table-row-' + runID;
+            const containerDiv = document.querySelector(`.${containerClass}`);
+            // Set the animation play state to running so that animationend
+            // event listener gets triggered to remove containerDiv
+            containerDiv.classList.add('hidden-msg');
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+    // Prevent the form from submitting
+    return false;
+}

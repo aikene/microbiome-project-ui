@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Upload
+{% endblock %}
+
+{% block script %}
+
+    <script src="{% static 'js/upload.js' %}"></script>
+
+    <!-- Links for drag and drop functionality -->
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+
+    <link href="{% static 'stylesheets/upload.css' %}" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/6491894f0b.js" crossorigin="anonymous"></script>
+
+{% endblock %}
+
+{% block body %}
+    <div class="main-area">
+        <div class="page-msg hidden-msg alert">
+        </div>
+
+        <div>
+            <span class="instructions-header">Upload Instructions</span>
+            <ul>
+                <li class="instructions-content-lg">Upload one metadata csv file and one or more fastq files.</li>
+                <li class="instructions-content-lg">Click <a href="{% url 'download_metadata_template' %}">here</a> to download the metadata template.</li>
+                <li class="instructions-content-lg">The run ids in the metadata csv file must consist of alphanumeric characters only.</li>
+                <li class="instructions-content-lg">Single-End Sequences</li>
+                    <ul>
+                        <li class="instructions-content-sm">The run ids in the metadata file must match the fastq file names (without the file extension).</li>
+                    </ul>
+                <li class="instructions-content-lg">Paired-End Sequences</li>
+                    <ul>
+                        <li class="instructions-content-sm">The file name for fastq files containing forward reads must consist of the run id and the suffix &quot_1&quot.</li>
+                        <li class="instructions-content-sm">The file name for fastq files containing reverse reads must consist of the run id and the suffix &quot_2&quot.</li>
+                    </ul>
+            </ul>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'upload' %}" class="dropzone dropzone-main" id="dz-form">
+            {% csrf_token %}
+            <div class="dz-message" data-dz-message>
+                <div class="dropzone-icon">
+                    <i class="fa-solid fa-cloud-arrow-up fa-2xl" style="color: #555555;"></i>
+                </div>
+                <div class="dropzone-text-container">
+                    <div class="dropzone-text">Drag and drop your metadata csv file and fastq files here</div>
+                </div>
+                <div class="dropzone-text-container">
+                    <div class="dropzone-text">or</div>
+                </div>
+                <div class="dropzone-text-container">
+                    <div class="dropzone-text">Click anywhere to select your files</div>
+                </div>
+            </div>
+        </form>
+
+        <button type="submit" class="btn btn-primary dropzone-upload-btn" id="upload">Upload</button>
+        <button type="submit" class="btn btn-secondary dropzone-reset-btn" id="reset">Reset</button>
+    </div>
+
+{% endblock %}
+
+

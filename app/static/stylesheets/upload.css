@@ -1,0 +1,63 @@
+.main-area {
+    font: 400 16px/1.5 Proxima Nova,proxima-nova,Helvetica Neue,Helvetica,Arial,sans-serif;
+    color: #555;
+}
+
+.dropzone-main {
+    background-color: #f8f8f8;
+    border: dashed;
+    border-color: #ccc;
+    border-radius: 10px;
+    min-height: 400px;
+}
+
+.dropzone-main:hover {
+    background-color: #e9eff5;
+}
+
+.dropzone-upload-btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.dropzone-reset-btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.dropzone .dz-preview .dz-progress {
+    top: 115% !important;
+}
+
+.dropzone-text-container {
+    margin-top: 10px;
+}
+
+.dropzone-text {
+
+
+    font-size: 1.4rem;
+}
+
+.dropzone-icon {
+    margin-bottom: 20px;
+}
+
+.dropzone {
+    height: 100%;
+}
+
+.instructions-header {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.instructions-content-lg {
+    font-size: 1.1rem;
+}
+
+.instructions-content-sm {
+    font-size: 1rem;
+}
+
+

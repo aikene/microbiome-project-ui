@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/"><img src="/app/static/img/microbiom_logo.png" width="35" /> Microbiome Platform</a>
+    <a class="navbar-brand" href="/"><img src="/app/static/img/microbiom_logo.png" width="35" /> Microbiome Analysis Platform</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
     </button>
     <div class="d-flex collapse" id="navbarScroll">
@@ -14,10 +14,13 @@
               <a class="nav-link" href="{% url 'history' user.username %}">Search History</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'profile' user.username %}">Profile</a>
+              <a class="nav-link" href="{% url 'upload' %}">Upload</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+              <a class="nav-link" id="profilelink" href="{% url 'profile' user.username %}">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="logout" href="{% url 'logout' %}">Logout</a>
             </li>
         {% else %}
             <li class="nav-item">

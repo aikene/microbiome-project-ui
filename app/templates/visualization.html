@@ -12,7 +12,7 @@
         <div class="col-md-auto">
         
           <div id="subtitleMsg">
-            <p>Please wait while we preparing the visualization. You can click the below demo charts to try it.</p>
+            <p>Please wait while the visualizations are being generated. You may click on the try it buttons below to display demo charts.</p>
           </div>
           <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:0%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
@@ -30,9 +30,6 @@
     </div>
     <div class="row">
         <div class="p-4 col"></div>
-    </div>
-    <div>
-       Debug: {{ runIds }}
     </div>
 </div>
 
@@ -100,7 +97,7 @@ async function get_progress(task_id, timestamp) {
                         $(".progress-bar").css("width","100%");
                         $(".progress").hide();
                         $("#subtitleMsg").hide();
-                        $("#progress-msg").html("<p>Your data visualization is ready to view. click <a href='/download_results_csv/"+timestamp+"-"+task_id+"/results.csv' target='_blank'>here</a> to download CSV.</p>");
+                        $("#progress-msg").html("<p>Your data visualization is ready to view. click <a href='/download_results_csv/"+timestamp+"-"+task_id+"' target='_blank'>here</a> to download CSV.</p>");
                         $("#btnTaxa").html("View")
                         $("#btnTaxa").attr("href","/taxonomic_bar_plots/"+timestamp+"-"+task_id);
                         $("#btnFeature").html("View")

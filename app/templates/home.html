@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load crispy_forms_tags %}
 
 {% block body %}
 <body>
@@ -15,19 +16,36 @@
     </head>
     <form action="{% url 'table' %}" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <div class="row justify-content-md-center">
-            <div class="col-md-auto"></div>
-            <div class="align-self-start">
-                <button id="clear-filters" type="Reset" class="btn btn-secondary btn-lg" onclick="clearSelect2();">
-            Reset Filters</button>
-            </div>
-            <div class="col-md-auto">
-                <button class="btn btn-primary btn-lg">
-                    Search
-                </button>
-            </div>
-            <div class="col-md-auto"></div>
+        {% for field in form %}
+            {% if field.label == 'Include only processed studies' or field.label == 'Include SRA studies' %}
+                <div class="form-check form-switch switch-btn switch-container">
+                    {{ field }}
+                    {{ field.label_tag }}
+                </div>
+            {% elif field.label == 'Include my private studies' or field.label == 'Include SRA studies' %}
+                {% if user.is_authenticated  %}
+                    <div class="form-check form-switch switch-btn switch-container">
+                        {{ field }}
+                        {{ field.label_tag }}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="form-field-inline">
+{#                    {{ field.label_tag }}#}
+                    <div class="form-field-inline-label">{{ field.label_tag }}</div>
+                    {{ field}}
+                </div>
+
+{#                {{ field|as_crispy_field }}#}
+            {% endif %}
+
+        {% endfor %}
+{#        {{ form.as_p }}#}
+
+        <div class="home-pg-btns">
+            <button id="search" class="btn btn-primary btn-lg">Search</button>
+            <button id="clear-filters" type="Reset" class="btn btn-secondary btn-lg" onclick="clearSelect2();">
+        Reset</button>
         </div>
     </form>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

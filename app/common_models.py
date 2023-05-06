@@ -1,16 +1,16 @@
 from django.db import models
 
 
-class Distinct_Sex(models.Model):
-    sex_calc = models.CharField(max_length=255, primary_key=True)
+class Distinct_Gender(models.Model):
+    gender = models.CharField(max_length=255, primary_key=True)
     count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'sex_calc_view'
+        db_table = 'gender_view'
 
     def __str__(self):
-        return self.sex_calc or ''
+        return self.gender or ''
 
 
 class Distinct_Library_Layout(models.Model):
@@ -193,15 +193,15 @@ class EcotypeSample(models.Model):
 
 
 class IsolateSample(models.Model):
-    iosolate_sam = models.CharField(max_length=255, primary_key=True)
+    isolate_sam = models.CharField(max_length=255, primary_key=True)
     count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'iosolate_sam_view'
+        db_table = 'isolate_sam_view'
 
     def __str__(self):
-        return self.iosolate_sam or ''
+        return self.isolate_sam or ''
 
 
 class StrainSample(models.Model):

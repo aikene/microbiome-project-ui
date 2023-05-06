@@ -6,21 +6,21 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-5">
-                    <div class="card shadow-lg border-0 rounded-lg mt-0 mb-3" style="width: 32rem;">
+                    <div class="card shadow-sm border-0 rounded-lg mt-0 mb-3" style="width: 32rem;">
                         <div class="card-header justify-content-center">
                           <h3 class="font-weight-light my-4 text-center">Register</h3>
                         </div>
 
                         {% if error_message %}
                             {% for msg in error_message %}
-                                <div class="alert alert-danger text-center">{{ msg }}</div>
+                                <div class="alert alert-danger text-center errormsg">{{ msg }}</div>
                             {% endfor %}
                         {% endif %}
 
                         {% if success_message %}
                             <div class="alert alert-success text-center">
                                 {% for msg in success_message %}
-                                    <div>{{ msg }}</div>
+                                    <div class="successmsg">{{ msg }}</div>
                                 {% endfor %}
                             </div>
                         {% endif %}

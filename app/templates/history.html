@@ -23,6 +23,13 @@ Search History | {{ username }}
                         <th class="table-generic-th">Bio Project</th>
                         <th class="table-generic-th">Country</th>
                         <th class="table-generic-th">Continent</th>
+                        <th class="table-generic-th">Sex</th>
+                        <th class="table-generic-th">Breed Sample</th>
+                        <th class="table-generic-th">Cultivar Sample</th>
+                        <th class="table-generic-th">Ecotype Sample</th>
+                        <th class="table-generic-th">Isolate Sample</th>
+                        <th class="table-generic-th">Library Selection</th>
+                        <th class="table-generic-th">Strain Sample</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,6 +47,13 @@ Search History | {{ username }}
                             <td class="table-generic-td">{{ search.bioproject | truncatechars:30 }}</td>
                             <td class="table-generic-td">{{ search.country | truncatechars:30 }}</td>
                             <td class="table-generic-td">{{ search.continent | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.gender | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.breed_sam | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.cultivar_sam | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.ecotype_sam | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.isolate_sam | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.library_selection | truncatechars:30 }}</td>
+                            <td class="table-generic-td">{{ search.strain_sam | truncatechars:30 }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -115,7 +129,7 @@ Search History | {{ username }}
             <div class="container my-3 p-3">
                 <div class="row justify-content-center">
                     <div class="col-lg-5">
-                        <div class="alert alert-secondary text-center card shadow-lg border-0 rounded-lg mt-0 mb-3">
+                        <div class="alert alert-secondary text-center card shadow-sm border-0 rounded-lg mt-0 mb-3">
                             Your search history is empty.
                         </div>
                     </div>
