@@ -2,6 +2,11 @@
 
 ## Setup
 ### Local Development Setup
+#### [Verify Python Version](https://www.python.org/downloads/)
+```sh
+python --version
+```
+**If above command does not return ```Python 3.9``` or greater, replace throughout this tutorial ```python3``` instead of ```python```**
 
 #### [Install Django](https://docs.djangoproject.com/en/4.2/topics/install/)
 ```sh
@@ -18,7 +23,7 @@ brew install redis
 
 #### Clone Repository
 ```sh
-git clone --branch ci-cd-deploy https://github.com/aikene/microbiome-project-ui.git
+git clone https://github.com/aikene/microbiome-project-ui.git
 ```
 #### Create and Activate Virtual Environment
 ```sh
@@ -31,7 +36,7 @@ source env/bin/activate
 ```shell
 pip install -r requirements.txt
 ```
-**update may be needed in requirements.txt file to update line 3 to:
+**update may be needed in requirements.txt file to update line 2 to:
 ```backports.zoneinfo==0.2.1;python_version<"3.9"```
 #### Change settings.py
 If no .env file was provided, 
