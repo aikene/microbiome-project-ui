@@ -238,7 +238,7 @@
 
 .form-field-inline {
     display: flex;
-    height: 3.2rem;
+    min-height: 3.2rem;
     align-items: center;
 }
 
